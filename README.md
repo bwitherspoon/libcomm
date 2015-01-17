@@ -24,3 +24,11 @@ make
 make test
 make install
 ```
+
+Documentation
+-------------
+
+```shell
+cd doc
+doxygen
+```
