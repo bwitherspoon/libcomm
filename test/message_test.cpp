@@ -9,15 +9,18 @@
 
 BOOST_AUTO_TEST_CASE(message_test)
 {
-  bool b0 = true;
-  bool b1 = false;
-  uint8_t u8_0 = 55;
+  const bool b = true;
+  const uint8_t u8 = 55;
+  const uint64_t u64 = 678;
 
   comm::message msg;
 
-  msg.pack().pack(b0).pack(u8_0);
+  msg.pack(b).pack().pack(u8).pack().pack(u64).pack();
 
-  msg.unpack().unpack(b1);
-
-  BOOST_CHECK_EQUAL(b0, b1);
+  BOOST_REQUIRE_EQUAL(msg.unpack<bool>(), b);
+  BOOST_REQUIRE_NO_THROW(msg.unpack());
+  BOOST_REQUIRE_EQUAL(msg.unpack<uint64_t>(), u8);
+  BOOST_REQUIRE_NO_THROW(msg.unpack());
+  BOOST_REQUIRE_EQUAL(msg.unpack<uint64_t>(), u64);
+  BOOST_REQUIRE_NO_THROW(msg.unpack());
 }
