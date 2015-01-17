@@ -34,7 +34,8 @@ struct unpack_error : public std::runtime_error
 /**
  * \brief A class for serializing and deserializing messages
  *
- *  See https://github.com/msgpack/msgpack/blob/master/spec.md
+ *  See https://github.com/msgpack/msgpack/blob/master/spec.md for the
+ *  serialization format.
  */
 class message
 {
@@ -89,13 +90,13 @@ public:
   //! Construct an empty message
   message();
 
-  //! Move constructs a message
+  //! Move construct a message
   message(message&& other);
 
-  //! Move assigns a message
+  //! Move assign a message
   message& operator=(message&& other);
 
-  //! Sets the message to an empty state
+  //! Set the message to an empty state
   void clear();
 
   //! Serialize a nil type
@@ -116,22 +117,22 @@ public:
   //! Serialize a 8 bit unsigned integer type
   message& pack(uint8_t value);
 
-  //! Serialize a signed integer type
+  //! Serialize a 64 bit signed integer type
   message& pack(int64_t value);
 
-  //! Serialize a signed integer type
+  //! Serialize a 32 bit signed integer type
   message& pack(int32_t value);
 
-  //! Serialize a signed integer type
+  //! Serialize a 16 bit signed integer type
   message& pack(int16_t value);
 
-  //! Serialize a signed integer type
+  //! Serialize a 8 bit signed integer type
   message& pack(int8_t value);
 
-  //! Serialize a single-precision floating-point type
+  //! Serialize a single precision floating point type
   message& pack(float value);
 
-  //! Serialize a double-precision floating-point type
+  //! Serialize a double precision floating point type
   message& pack(double value);
 
   //! Deserialize a nil type
@@ -141,23 +142,15 @@ public:
   message& unpack(bool& value);
 
 private:
-  //! A type trait helper
-  template<typename T>
-  struct is_data : std::integral_constant<bool,
-      std::numeric_limits<T>::is_integer
-          and not std::numeric_limits<T>::is_signed>
-  {
-  };
-
-  //! Insert data into the message
+  //! Insert data into the message buffer
   template<typename T>
   message& insert(T data);
 
-  //! Extract data from the message
+  //! Extract data from the message buffer
   template<typename T>
   T extract();
 
-  std::vector<uint8_t> m_data;           //!< message data
+  std::vector<uint8_t> m_data;           //!< message buffer
   std::vector<uint8_t>::size_type m_pos; //!< extract position
 };
 
@@ -198,9 +191,11 @@ constexpr bool operator!=(uint8_t lhs, message::format rhs)
 template<typename T>
 message& message::insert(T data)
 {
-  static_assert(
-      is_data<T>::value,
-      "The data type being inserted must be an unsigned integer type");
+  constexpr bool predicate =
+      std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed;
+  static_assert(predicate,
+      "The data being inserted should be of an unsigned integer type");
+
   const uint8_t* first = reinterpret_cast<const uint8_t*>(&data);
   const uint8_t* last = first + sizeof(T);
   m_data.insert(std::end(m_data), first, last);
@@ -217,9 +212,11 @@ message& message::insert<uint8_t>(uint8_t data)
 template<>
 message& message::insert<message::format>(format data)
 {
-  static_assert(
-      std::is_same<uint8_t, std::underlying_type<format>::type>::value,
+  constexpr bool predicate =
+      std::is_same<uint8_t, std::underlying_type<format>::type>::value;
+  static_assert(predicate,
       "The underlying type of the format enum class is not uint8_t");
+
   insert(static_cast<uint8_t>(data));
   return *this;
 }
@@ -402,9 +399,10 @@ message& message::pack(int8_t value)
 
 message& message::pack(float value)
 {
-  static_assert(
-      std::numeric_limits<float>::is_iec559,
-      "The single precision floating point type is not IEEE 754");
+  constexpr bool predicate = std::numeric_limits<float>::is_iec559;
+  static_assert(predicate,
+      "The single precision floating point type is not IEEE 754 format");
+
   insert(format::float32);
   insert(htobe32((uint32_t)value));
   return *this;
@@ -412,9 +410,10 @@ message& message::pack(float value)
 
 message& message::pack(double value)
 {
-  static_assert(
-      std::numeric_limits<double>::is_iec559,
-      "The double precision floating point type is not IEEE 754");
+  constexpr bool predicate = std::numeric_limits<double>::is_iec559;
+  static_assert(predicate,
+      "The double precision floating point type is not IEEE 754 format");
+
   insert(format::float64);
   insert(htobe64((uint64_t)value));
   return *this;
