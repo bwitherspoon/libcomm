@@ -10,3 +10,8 @@ add_executable(message_test message_test.cpp)
 target_link_libraries(message_test ${Boost_LIBRARIES})
 add_test(message_test message_test)
 
+add_executable(socket_test socket_test.cpp)
+target_link_libraries(socket_test ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES})
+target_include_directories(socket_test PRIVATE ${ZeroMQ_INCLUDE_DIRS})
+add_test(socket_test socket_test)
+

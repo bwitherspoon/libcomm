@@ -25,6 +25,7 @@ namespace comm
  */
 class message
 {
+  friend class socket;
 public:
   //! The binary message formats
   enum class formats : uint8_t
