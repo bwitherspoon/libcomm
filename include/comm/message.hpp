@@ -11,6 +11,7 @@
 #include <limits>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace comm
@@ -25,8 +26,8 @@ namespace comm
 class message
 {
 public:
-  //! A message binary format
-  enum class format : uint8_t
+  //! The binary message formats
+  enum class formats : uint8_t
   {
     posfixint = 0x00,
     fixmap    = 0x80,
@@ -137,18 +138,145 @@ public:
   //! Serialize a double precision floating point type
   message& pack(double value);
 
-  //! Deserialize a nil object
-  void unpack();
+  //! Serialize any supported type
+  template<typename T> message& operator<<(T value) { return pack(value); }
 
-  //! Deserialize any supported object
-  template<typename T> T unpack();
+  //! Deserialize a nil type
+  message& unpack();
+
+  //! Deserialize any supported type
+  template<typename T> message& unpack(T& value);
+
+  //! Deserialize any supported type
+  template<typename T>
+  message& operator>>(T& value) { return unpack(value); }
 
 private:
+  static uint64_t betoh(uint64_t val)
+  {
+    return be64toh(val);
+  }
+
+  static uint32_t betoh(uint32_t val)
+  {
+    return be32toh(val);
+  }
+
+  static uint16_t betoh(uint16_t val)
+  {
+    return be16toh(val);
+  }
+
+  static int64_t betoh(int64_t val)
+  {
+    auto dat = be64toh(reinterpret_cast<uint64_t&>(val));
+    return reinterpret_cast<int64_t&>(dat);
+  }
+
+
+  static int32_t betoh(int32_t val)
+  {
+    auto dat = be32toh(reinterpret_cast<uint32_t&>(val));
+    return reinterpret_cast<int32_t&>(dat);
+  }
+
+  static int16_t betoh(int16_t val)
+  {
+    auto dat = be16toh(reinterpret_cast<uint16_t&>(val));
+    return reinterpret_cast<int16_t&>(dat);
+  }
+
+  static double betoh(double val)
+  {
+    auto dat = be64toh(reinterpret_cast<uint64_t&>(val));
+    return reinterpret_cast<double&>(dat);
+  }
+
+  static float betoh(float val)
+  {
+    auto dat = be32toh(reinterpret_cast<uint32_t&>(val));
+    return reinterpret_cast<float&>(dat);
+  }
+
+  static uint64_t htobe(uint64_t val)
+  {
+    return htobe64(val);
+  }
+
+  static uint32_t htobe(uint32_t val)
+  {
+    return htobe32(val);
+  }
+
+  static uint16_t htobe(uint16_t val)
+  {
+    return htobe16(val);
+  }
+
+  static int64_t htobe(int64_t val)
+  {
+    auto dat = htobe64(reinterpret_cast<uint64_t&>(val));
+    return reinterpret_cast<int64_t&>(dat);
+  }
+
+  static int32_t htobe(int32_t val)
+  {
+    auto dat = htobe32(reinterpret_cast<uint32_t&>(val));
+    return reinterpret_cast<int32_t&>(dat);
+  }
+
+  static int16_t htobe(int16_t val)
+  {
+    auto dat = htobe16(reinterpret_cast<uint16_t&>(val));
+    return reinterpret_cast<int16_t&>(dat);
+  }
+
+  static double htobe(double val)
+  {
+    auto dat = htobe64(reinterpret_cast<uint64_t&>(val));
+    return reinterpret_cast<double&>(dat);
+  }
+
+  static float htobe(float val)
+  {
+    auto dat = htobe32(reinterpret_cast<uint32_t&>(val));
+    return reinterpret_cast<float&>(dat);
+  }
+
+  uint64_t unpack_format(uint64_t value, uint8_t format);
+
+  uint32_t unpack_format(uint32_t value, uint8_t format);
+
+  uint16_t unpack_format(uint16_t value, uint8_t format);
+
+  uint8_t unpack_format(uint8_t value, uint8_t format);
+
+  int64_t unpack_format(int64_t value, uint8_t format);
+
+  int32_t unpack_format(int32_t value, uint8_t format);
+
+  int16_t unpack_format(int16_t value, uint8_t format);
+
+  int8_t unpack_format(int8_t value, uint8_t format);
+
+  double unpack_format(double value, uint8_t format);
+
+  float unpack_format(float value, uint8_t format);
+
+  //! Insert a byte into the message buffer
+  void insert(uint8_t data);
+
+  //! Insert a format byte into the message buffer
+  void insert(formats data);
+
   //! Insert data into the message buffer
-  template<typename T> message& insert(T data);
+  template<typename T> void insert(const T& data);
+
+  //! Extract a single byte from the message buffer without advancing position
+  uint8_t extract();
 
   //! Extract data from the message buffer without advancing position
-  template<typename T> T extract();
+  template<typename T> T& extract(T&);
 
   std::vector<uint8_t> m_data;           //!< message buffer
   std::vector<uint8_t>::size_type m_pos; //!< extract position
@@ -156,84 +284,82 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-constexpr uint8_t operator|(message::format lhs, uint8_t rhs)
+constexpr uint8_t operator|(message::formats lhs, uint8_t rhs)
 {
   return static_cast<uint8_t>(lhs) | rhs;
 }
 
-constexpr uint8_t operator|(uint8_t lhs, message::format rhs)
+constexpr uint8_t operator|(uint8_t lhs, message::formats rhs)
 {
-  return lhs | rhs;
+  return rhs | lhs;
 }
 
-constexpr bool operator==(message::format lhs, uint8_t rhs)
+constexpr uint8_t operator&(message::formats lhs, uint8_t rhs)
+{
+  return static_cast<uint8_t>(lhs) & rhs;
+}
+
+constexpr uint8_t operator&(uint8_t lhs, message::formats rhs)
+{
+  return rhs & lhs;
+}
+
+constexpr bool operator==(message::formats lhs, uint8_t rhs)
 {
   return static_cast<uint8_t>(lhs) == rhs;
 }
 
-constexpr bool operator==(uint8_t lhs, message::format rhs)
+constexpr bool operator==(uint8_t lhs, message::formats rhs)
 {
   return rhs == lhs;
 }
 
-constexpr bool operator!=(message::format lhs, uint8_t rhs)
+constexpr bool operator!=(message::formats lhs, uint8_t rhs)
 {
   return !(lhs == rhs);
 }
 
-constexpr bool operator!=(uint8_t lhs, message::format rhs)
+constexpr bool operator!=(uint8_t lhs, message::formats rhs)
 {
   return rhs != lhs;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-template<typename T>
-message& message::insert(T data)
-{
-  constexpr bool predicate =
-      std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed;
-  static_assert(predicate,
-      "data being inserted should be of an unsigned integer type");
-
-  const uint8_t* first = reinterpret_cast<const uint8_t*>(&data);
-  const uint8_t* last = first + sizeof(data);
-
-  m_data.insert(std::end(m_data), first, last);
-
-  return *this;
-}
-
-template<>
-message& message::insert<uint8_t>(uint8_t data)
+void message::insert(uint8_t data)
 {
   m_data.push_back(data);
-  return *this;
 }
 
-template<>
-message& message::insert<message::format>(format data)
+void message::insert(formats data)
 {
   constexpr bool predicate =
-      std::is_same<uint8_t, std::underlying_type<format>::type>::value;
+      std::is_same<uint8_t, std::underlying_type<formats>::type>::value;
   static_assert(predicate,
       "underlying type of the format enum class is not uint8_t");
 
   insert(static_cast<uint8_t>(data));
-
-  return *this;
 }
 
 template<typename T>
-T message::extract()
+void message::insert(const T& data)
 {
-  constexpr bool predicate =
-      std::numeric_limits<T>::is_integer && !std::numeric_limits<T>::is_signed;
-  static_assert(predicate,
-      "type being extracted should be an unsigned integer");
+  const uint8_t* first = reinterpret_cast<const uint8_t*>(&data);
 
-  T data;
+  m_data.insert(std::end(m_data), first, first + sizeof(data));
+}
 
+uint8_t message::extract()
+{
+  if (m_data.size() - m_pos < 1)
+    throw unpack_error(__func__, "message size insufficient");
+
+  return m_data[m_pos];
+}
+
+template<typename T>
+T& message::extract(T& data)
+{
   if (m_data.size() - m_pos < sizeof(data))
     throw unpack_error(__func__, "message size insufficient");
 
@@ -242,15 +368,6 @@ T message::extract()
   std::copy_n(&m_data[m_pos], sizeof(data), result);
 
   return data;
-}
-
-template<>
-uint8_t message::extract<uint8_t>()
-{
-  if (m_data.size() - m_pos < 1)
-    throw unpack_error(__func__, "message size insufficient");
-
-  return m_data[m_pos];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -279,15 +396,17 @@ void message::clear()
   m_pos = 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 message& message::pack()
 {
-  insert(format::nil);
+  insert(formats::nil);
   return *this;
 }
 
 message& message::pack(bool value)
 {
-  insert((value) ? format::booltrue : format::boolfalse);
+  insert((value) ? formats::booltrue : formats::boolfalse);
   return *this;
 }
 
@@ -295,8 +414,8 @@ message& message::pack(uint64_t value)
 {
   if (value > std::numeric_limits<uint32_t>::max())
   {
-    insert(format::uint64);
-    insert(htobe64(value));
+    insert(formats::uint64);
+    insert(htobe(value));
   }
   else
   {
@@ -309,8 +428,8 @@ message& message::pack(uint32_t value)
 {
   if (value > std::numeric_limits<uint16_t>::max())
   {
-    insert(format::uint32);
-    insert(htobe32(value));
+    insert(formats::uint32);
+    insert(htobe(value));
   }
   else
   {
@@ -323,8 +442,8 @@ message& message::pack(uint16_t value)
 {
   if (value > std::numeric_limits<uint8_t>::max())
   {
-    insert(format::uint16);
-    insert(htobe16(value));
+    insert(formats::uint16);
+    insert(htobe(value));
   }
   else
   {
@@ -341,7 +460,7 @@ message& message::pack(uint8_t value)
   }
   else
   {
-    insert(format::uint8);
+    insert(formats::uint8);
     insert(value);
   }
   return *this;
@@ -354,8 +473,8 @@ message& message::pack(int64_t value)
 
   if (value < min or value > max)
   {
-    insert(format::int64);
-    insert(htobe64(reinterpret_cast<uint64_t&>(value)));
+    insert(formats::int64);
+    insert(htobe(value));
   }
   else
   {
@@ -372,8 +491,8 @@ message& message::pack(int32_t value)
 
   if (value < min or value > max)
   {
-    insert(format::int32);
-    insert(htobe32(reinterpret_cast<uint32_t&>(value)));
+    insert(formats::int32);
+    insert(htobe(value));
   }
   else
   {
@@ -390,8 +509,8 @@ message& message::pack(int16_t value)
 
   if (value < min or value > max)
   {
-    insert(format::int16);
-    insert(htobe16(reinterpret_cast<uint16_t&>(value)));
+    insert(formats::int16);
+    insert(htobe(value));
   }
   else
   {
@@ -405,12 +524,12 @@ message& message::pack(int8_t value)
 {
   if (value < -(1 << 5))
   {
-    insert(format::int8);
-    insert(reinterpret_cast<uint8_t&>(value));
+    insert(formats::int8);
+    insert(value);
   }
   else
   {
-    insert(reinterpret_cast<uint8_t&>(value));
+    insert(value);
   }
   return *this;
 }
@@ -419,10 +538,11 @@ message& message::pack(float value)
 {
   constexpr bool predicate = std::numeric_limits<float>::is_iec559;
   static_assert(predicate,
-      "The single precision floating point type is not IEEE 754 format");
+      "native single precision floating point type is not IEEE 754 format");
 
-  insert(format::float32);
-  insert(htobe32(reinterpret_cast<const uint32_t&>(value)));
+  insert(formats::float32);
+  insert(htobe(value));
+
   return *this;
 }
 
@@ -430,87 +550,241 @@ message& message::pack(double value)
 {
   constexpr bool predicate = std::numeric_limits<double>::is_iec559;
   static_assert(predicate,
-      "The double precision floating point type is not IEEE 754 format");
+      "native double precision floating point type is not IEEE 754 format");
 
-  insert(format::float64);
-  insert(htobe64(reinterpret_cast<const uint64_t&>(value)));
+  insert(formats::float64);
+  insert(htobe(value));
+
   return *this;
 }
 
-void message::unpack()
+////////////////////////////////////////////////////////////////////////////////
+
+uint64_t message::unpack_format(uint64_t value, uint8_t format)
 {
-  if (extract<uint8_t>() != format::nil)
-    throw unpack_error(__func__, "message object is not nil");
+  uint64_t result;
+
+  if (format == formats::uint64)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    result = unpack_format(static_cast<uint32_t>(value), format);
+  }
+
+  return result;
+}
+
+uint32_t message::unpack_format(uint32_t value, uint8_t format)
+{
+  uint32_t result;
+
+  if (format == formats::uint32)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    result = unpack_format(static_cast<uint16_t>(value), format);
+  }
+
+  return result;
+}
+
+uint16_t message::unpack_format(uint16_t value, uint8_t format)
+{
+  uint16_t result;
+
+  if (format == formats::uint16)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    result = unpack_format(static_cast<uint8_t>(value), format);
+  }
+
+  return result;
+}
+
+uint8_t message::unpack_format(uint8_t value, uint8_t format)
+{
+  uint8_t result;
+
+  if (format == formats::uint8)
+  {
+    result = extract(value);
+    m_pos += sizeof(value);
+  }
+  else if (format < (1 << 7)) // fixint
+  {
+    result = format;
+  }
+  else
+  {
+    throw unpack_error(__func__, "failed to unpack a positive integer object");
+  }
+
+  return result;
+}
+
+int64_t message::unpack_format(int64_t value, uint8_t format)
+{
+  int64_t result;
+
+  if (format == formats::int64)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    result = unpack_format(static_cast<int32_t>(value), format);
+  }
+
+  return result;
+}
+
+int32_t message::unpack_format(int32_t value, uint8_t format)
+{
+  int32_t result;
+
+  if (format == formats::int32)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    result = unpack_format(static_cast<int16_t>(value), format);
+  }
+
+  return result;
+}
+
+int16_t message::unpack_format(int16_t value, uint8_t format)
+{
+  int16_t result;
+
+  if (format == formats::int16)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    result = unpack_format(static_cast<int8_t>(value), format);
+  }
+
+  return result;
+}
+
+int8_t message::unpack_format(int8_t value, uint8_t format)
+{
+  int8_t result;
+
+  if (format == formats::int8)
+  {
+    result = extract(value);
+    m_pos += sizeof(value);
+  }
+  else if ((format & formats::negfixint) == formats::negfixint) // fixint
+  {
+    result = reinterpret_cast<int8_t&>(format);
+  }
+  else
+  {
+    throw unpack_error(__func__, "failed to unpack a negative integer object");
+  }
+
+  return result;
+}
+
+double message::unpack_format(double value, uint8_t format)
+{
+  double result;
+
+  if (format == formats::float64)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    result = unpack_format(static_cast<float>(value), format);
+  }
+
+  return result;
+}
+
+float message::unpack_format(float value, uint8_t format)
+{
+  float result;
+
+  if (format == formats::float32)
+  {
+    result = betoh(extract(value));
+    m_pos += sizeof(value);
+  }
+  else
+  {
+    throw unpack_error(__func__, "failed to unpack a floating point object");
+  }
+
+  return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+message& message::unpack()
+{
+  if (extract() != formats::nil)
+    throw unpack_error(__func__, "failed to unpack a nil object");
+
   m_pos++;
+
+  return *this;
 }
 
 template<typename T>
-T message::unpack()
+message& message::unpack(T& value)
 {
-  // Should not compile for unsupported types
-}
-
-template<>
-bool message::unpack<bool>()
-{
-  bool value;
-  uint8_t fmt = extract<uint8_t>();
-
-  if (fmt == format::boolfalse)
-    value = false;
-  else if (fmt == format::booltrue)
-    value = true;
-  else
-    throw unpack_error(__func__, "message object is not boolean");
+  auto format = extract();
 
   m_pos++;
 
-  return value;
+  try
+  {
+    value = unpack_format(value, format);
+  }
+  catch (const unpack_error&)
+  {
+    m_pos--;
+    throw;
+  }
+
+  return *this;
 }
 
 template<>
-uint64_t message::unpack<uint64_t>()
+message& message::unpack<bool>(bool& value)
 {
-  uint8_t fmt = extract<uint8_t>();
+  uint8_t format = extract();
 
-  if (fmt < (1 << 7))
-  {
-    m_pos++;
-    return fmt;
-  }
-
-  uint64_t data;
-
-  if (fmt == format::uint8)
-  {
-    m_pos++;
-    data = extract<uint8_t>();
-    m_pos += sizeof(uint8_t);
-  }
-  else if (fmt == format::uint16)
-  {
-    m_pos++;
-    data = be16toh(extract<uint16_t>());
-    m_pos += sizeof(uint16_t);
-  }
-  else if (fmt == format::uint32)
-  {
-    m_pos++;
-    data = be32toh(extract<uint32_t>());
-    m_pos += sizeof(uint32_t);
-  }
-  else if (fmt == format::uint64)
-  {
-    m_pos++;
-    data = be64toh(extract<uint64_t>());
-    m_pos += sizeof(uint64_t);
-  }
+  if (format == formats::boolfalse)
+    value = false;
+  else if (format == formats::booltrue)
+    value = true;
   else
-  {
-    throw unpack_error(__func__, "message object is not an unsigned integer");
-  }
+    throw unpack_error(__func__, "failed to unpack a boolean object");
 
-  return data;
+  m_pos++;
+
+  return *this;
 }
 
 } /* namespace comm */
