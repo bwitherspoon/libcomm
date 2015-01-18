@@ -102,12 +102,6 @@ public:
   //! Reset the message so it can be unpacked again
   void reset() { m_pos = 0; }
 
-  //! Access the underlying array
-  uint8_t* data() { return m_data.data(); }
-
-  //! Returns the number of elements in the underlying array
-  std::size_t size() const { return m_data.size(); }
-
   //! Serialize a nil type
   message& pack();
 
@@ -268,6 +262,14 @@ private:
   double unpack_format(double value, uint8_t format);
 
   float unpack_format(float value, uint8_t format);
+
+  uint8_t* data() { return m_data.data(); }
+
+  const uint8_t* data() const { return m_data.data(); }
+
+  std::size_t size() const { return m_data.size(); }
+
+  void resize(std::size_t count) { m_data.resize(count); }
 
   //! Insert a byte into the message buffer
   void insert(uint8_t data);
