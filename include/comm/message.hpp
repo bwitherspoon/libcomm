@@ -102,6 +102,12 @@ public:
   //! Reset the message so it can be unpacked again
   void reset() { m_pos = 0; }
 
+  //! Access the underlying array
+  uint8_t* data() { return m_data.data(); }
+
+  //! Returns the number of elements in the underlying array
+  std::size_t size() const { return m_data.size(); }
+
   //! Serialize a nil type
   message& pack();
 
