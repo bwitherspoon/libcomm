@@ -50,7 +50,6 @@ using buffer_pair = std::pair<
     std::unique_ptr<input_buffer<ValueType>>,
         std::unique_ptr<output_buffer<ValueType>>>;
 
-//! Create a buffer input and output pair
 template<typename ValueType>
 buffer_pair<ValueType> make_buffer_pair(std::size_t);
 
@@ -58,6 +57,20 @@ buffer_pair<ValueType> make_buffer_pair(std::size_t);
 
 namespace comm
 {
+
+////////////////////////////////////////////////////////////////////////////////
+
+//! An exception thrown on buffer construction errors
+struct buffer_error : public std::system_error
+{
+  explicit buffer_error(const std::string& where, const std::string& what) :
+      std::system_error(errno, std::generic_category(), where + ": " + what)
+  {
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 namespace detail
 {
 /*!
@@ -97,15 +110,6 @@ private:
   std::size_t size_;
   std::atomic<std::size_t> in_;
   std::atomic<std::size_t> out_;
-};
-
-//! An exception thrown on buffer construction errors
-struct buffer_error : public std::system_error
-{
-  explicit buffer_error(const std::string& where, const std::string& what) :
-      std::system_error(errno, std::generic_category(), where + ": " + what)
-  {
-  }
 };
 
 /*! \brief The maximum number of items the buffer can hold
