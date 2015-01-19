@@ -14,21 +14,6 @@
 
 namespace comm
 {
-//! An exception thrown on message socket errors
-struct socket_error : public std::runtime_error
-{
-  explicit socket_error(const std::string& where, const std::string& what) :
-      std::runtime_error(where + ": " + what)
-  {
-  }
-  explicit socket_error(const std::string& where) :
-      socket_error(where, zmq_strerror(zmq_errno()))
-  {
-  }
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
 //! A messaging socket
 class socket
 {
@@ -38,6 +23,19 @@ public:
   {
     request = ZMQ_REQ,
     reply   = ZMQ_REP
+  };
+
+  //! An exception thrown on message socket errors
+  struct socket_error : public std::runtime_error
+  {
+    explicit socket_error(const std::string& where, const std::string& what) :
+        std::runtime_error(where + ": " + what)
+    {
+    }
+    explicit socket_error(const std::string& where) :
+        socket_error(where, zmq_strerror(zmq_errno()))
+    {
+    }
   };
 
   socket(const socket&) = delete;
@@ -187,7 +185,7 @@ context::context()
 {
   m_context = zmq_ctx_new();
   if (m_context == nullptr)
-    throw socket_error(__func__);
+    throw socket::socket_error(__func__);
 }
 
 context::~context()
