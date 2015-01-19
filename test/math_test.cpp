@@ -14,6 +14,21 @@ BOOST_AUTO_TEST_CASE(abs_test)
   BOOST_CHECK_EQUAL(abs(-5), 5);
 
   BOOST_CHECK_EQUAL(abs(12), 12);
+
+  BOOST_CHECK_EQUAL(abs(-1.3), 1.3);
+
+  BOOST_CHECK_EQUAL(abs(5.4), 5.4);
+}
+
+BOOST_AUTO_TEST_CASE(max_test)
+{
+  using comm::math::max;
+
+  BOOST_CHECK_EQUAL(max(-7, 5), 5);
+
+  BOOST_CHECK_EQUAL(max(7, 67), 67);
+
+  BOOST_CHECK_EQUAL(max(-9.0, 5.7), 5.7);
 }
 
 BOOST_AUTO_TEST_CASE(gcd_test)
