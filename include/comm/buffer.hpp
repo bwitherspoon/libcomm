@@ -57,9 +57,6 @@ buffer_pair<ValueType> make_buffer_pair(std::size_t);
 
 namespace comm
 {
-
-////////////////////////////////////////////////////////////////////////////////
-
 //! An exception thrown on buffer construction errors
 struct buffer_error : public std::system_error
 {
@@ -211,21 +208,21 @@ buffer_shared<ValueType>::~buffer_shared()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+//! \cond
 //! An input buffer tag
 struct input_buffer_tag
 {
 };
-
 //! An output buffer tag
 struct output_buffer_tag
 {
 };
+//! \endcond
 
 //! Make an input and output buffer pair */
 template<typename T>
 buffer_pair<T> make_buffer_pair(std::size_t n)
 {
-
   auto impl = std::make_shared<detail::buffer_shared<T>>(n);
 
   // TODO C++14 introduces make_unique
@@ -282,53 +279,64 @@ public:
     return shared_->data_ + index();
   }
 
+  //! Returns an iterator to the beginning of the buffer
   iterator begin()
   {
     return shared_->data_ + index();
   }
 
+  //! Returns an iterator to the beginning of the buffer
   const_iterator begin() const
   {
     return shared_->data_ + index();
   }
 
+  //! Returns an iterator to the beginning of the buffer
   const_iterator cbegin() const
   {
     return shared_->data_ + index();
   }
 
+  //! Returns an iterator to the end of the buffer
   iterator end()
   {
     return begin() + size();
   }
 
+  //! Returns a iterator to the end of the buffer
   const_iterator end() const
   {
     return begin() + size();
   }
 
+  //! Returns a iterator to the end of the buffer
   const_iterator cend() const
   {
     return begin() + size();
   }
 
+  //! Checks whether the buffer is empty
   bool empty() const
   {
     return shared_->in_ == shared_->out_;
   };
 
+  //! Returns the number of items in the buffer
   size_type size() const;
 
+  //! Returns the number of items that can be held plus one
   size_type capacity() const
   {
     return shared_->size_;
   }
 
+  //! The maximum number of items that can be held in a buffer
   static constexpr size_type max_size()
   {
     return detail::buffer_shared<ValueType>::max_size();
   }
 
+  //! Advances the current position in the buffer
   void advance(size_type n);
 
 private:

@@ -172,7 +172,7 @@ public:
   ~context();
 
   /*! \brief Constructs a new message socket
-   *  \param type A message socket type
+   *  \param type a message socket type
    *  \returns A new message socket
    */
   std::unique_ptr<socket> make_socket(socket::types type);

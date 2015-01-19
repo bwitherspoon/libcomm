@@ -15,33 +15,26 @@ Required external dependencies:
 Getting Started
 ---------------
 
-Clone the repository and compile:
+Clone the repository and compile in a subdirectory:
 
-```shell
-git clone https://github.com/spoonb/comm.git
-cd comm
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make
-```
+    git clone https://github.com/spoonb/comm.git
+    cd comm
+    mkdir build
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=Release ..
+    make
 
 Run the tests:
 
-```shell
-make test
-```
+    make test
 
-Currently no files are installed only tests can be run.
+Currently no files are installed and only the tests can be run.
 
 Documentation
 -------------
 
-Doxygen is required to generate the documentation.
+Run [Doxygen](http://www.doxygen.org) from the *doc* subdirectory:
 
-Run Doxygen from the documention subdirectory:
+    cd doc
+    doxygen
 
-```shell
-cd doc
-doxygen
-```
