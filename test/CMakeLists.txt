@@ -15,3 +15,6 @@ target_link_libraries(socket_test ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES})
 target_include_directories(socket_test PRIVATE ${ZeroMQ_INCLUDE_DIRS})
 add_test(socket_test socket_test)
 
+add_executable(math_test math_test.cpp)
+target_link_libraries(math_test ${Boost_LIBRARIES})
+add_test(math_test math_test)
