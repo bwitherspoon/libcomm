@@ -269,16 +269,6 @@ public:
   buffer<ValueType, Tag>&
   operator=(const buffer<ValueType, Tag>&&) = delete;
 
-  pointer data()
-  {
-    return shared_->data_ + index();
-  }
-
-  const_pointer data() const
-  {
-    return shared_->data_ + index();
-  }
-
   //! Returns an iterator to the beginning of the buffer
   iterator begin()
   {
