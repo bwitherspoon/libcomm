@@ -18,3 +18,7 @@ add_test(socket_test socket_test)
 add_executable(math_test math_test.cpp)
 target_link_libraries(math_test ${Boost_LIBRARIES})
 add_test(math_test math_test)
+
+add_executable(buffer_test buffer_test.cpp)
+target_link_libraries(buffer_test ${Boost_LIBRARIES})
+add_test(buffer_test buffer_test)
