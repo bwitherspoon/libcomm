@@ -1,16 +1,21 @@
 Comm
 ====
 
-This is a library for communication systems.
+This is a library for building communication and sensing systems.
 
 Dependencies
 ------------
 
-Required external dependencies:
+Required to compile and run tests:
 
 - [CMake](http://www.cmake.org/)
 - [Boost.Test](http://www.boost.org/)
 - [ZeroMQ](http://zeromq.org/)
+
+Required to build documentation:
+
+- [Doxygen](http://www.doxygen.org)
+- [Graphviz](http://www.graphviz.org)
 
 Getting Started
 ---------------
