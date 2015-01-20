@@ -31,13 +31,13 @@ BOOST_AUTO_TEST_CASE(buffer_test)
 
   // Copy data into buffer and compare it with the output
   std::generate(ref.begin(), ref.end(), rand);
-  std::copy(ref.begin(), ref.end(), in->data());
+  std::copy(ref.begin(), ref.end(), in->begin());
   in->advance(ref.size());
 
   BOOST_REQUIRE_EQUAL(in->size(), 0);
   BOOST_REQUIRE_EQUAL(out->size(), ref.size());
   BOOST_CHECK_EQUAL_COLLECTIONS(
-      ref.begin(), ref.end(), out->data(), out->data() + out->size());
+      ref.begin(), ref.end(), out->begin(), out->end());
 
   out->advance(ref.size());
 
@@ -47,10 +47,10 @@ BOOST_AUTO_TEST_CASE(buffer_test)
   // Repeat to test circular buffering
   ref.resize(in->size() / 2);
   std::generate(ref.begin(), ref.end(), rand);
-  std::copy(ref.begin(), ref.end(), in->data());
+  std::copy(ref.begin(), ref.end(), in->begin());
   in->advance(ref.size());
 
   BOOST_REQUIRE_EQUAL(out->size(), ref.size());
   BOOST_CHECK_EQUAL_COLLECTIONS(
-      ref.begin(), ref.end(), out->data(), out->data() + out->size());
+      ref.begin(), ref.end(), out->begin(), out->end());
 }
