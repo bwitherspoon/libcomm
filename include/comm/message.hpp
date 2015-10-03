@@ -8,6 +8,7 @@
 #include <endian.h>
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -170,33 +171,45 @@ private:
 
   static int64_t betoh(int64_t val)
   {
-    auto dat = be64toh(reinterpret_cast<uint64_t&>(val));
-    return reinterpret_cast<int64_t&>(dat);
+    uint64_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = be64toh(dat);
+    return static_cast<int64_t>(dat);
   }
 
 
   static int32_t betoh(int32_t val)
   {
-    auto dat = be32toh(reinterpret_cast<uint32_t&>(val));
-    return reinterpret_cast<int32_t&>(dat);
+    uint32_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = be32toh(dat);
+    return static_cast<int32_t>(dat);
   }
 
   static int16_t betoh(int16_t val)
   {
-    auto dat = be16toh(reinterpret_cast<uint16_t&>(val));
-    return reinterpret_cast<int16_t&>(dat);
+    uint16_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = be16toh(dat);
+    return static_cast<int16_t>(dat);
   }
 
   static double betoh(double val)
   {
-    auto dat = be64toh(reinterpret_cast<uint64_t&>(val));
-    return reinterpret_cast<double&>(dat);
+    uint64_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = be64toh(dat);
+    std::memcpy(&val, &dat, sizeof(dat));
+    return val;
   }
 
   static float betoh(float val)
   {
-    auto dat = be32toh(reinterpret_cast<uint32_t&>(val));
-    return reinterpret_cast<float&>(dat);
+    uint32_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = be32toh(dat);
+    std::memcpy(&val, &dat, sizeof(dat));
+    return val;
   }
 
   static uint64_t htobe(uint64_t val)
@@ -216,32 +229,44 @@ private:
 
   static int64_t htobe(int64_t val)
   {
-    auto dat = htobe64(reinterpret_cast<uint64_t&>(val));
-    return reinterpret_cast<int64_t&>(dat);
+    uint64_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = htobe64(dat);
+    return static_cast<int64_t>(dat);
   }
 
   static int32_t htobe(int32_t val)
   {
-    auto dat = htobe32(reinterpret_cast<uint32_t&>(val));
-    return reinterpret_cast<int32_t&>(dat);
+    uint32_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = htobe32(dat);
+    return static_cast<int32_t>(dat);
   }
 
   static int16_t htobe(int16_t val)
   {
-    auto dat = htobe16(reinterpret_cast<uint16_t&>(val));
-    return reinterpret_cast<int16_t&>(dat);
+    uint16_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = htobe16(dat);
+    return static_cast<int16_t>(dat);
   }
 
   static double htobe(double val)
   {
-    auto dat = htobe64(reinterpret_cast<uint64_t&>(val));
-    return reinterpret_cast<double&>(dat);
+    uint64_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = htobe64(dat);
+    std::memcpy(&val, &dat, sizeof(dat));
+    return val;
   }
 
   static float htobe(float val)
   {
-    auto dat = htobe32(reinterpret_cast<uint32_t&>(val));
-    return reinterpret_cast<float&>(dat);
+    uint32_t dat;
+    std::memcpy(&dat, &val, sizeof(val));
+    dat = htobe32(dat);
+    std::memcpy(&val, &dat, sizeof(dat));
+    return val;
   }
 
   uint64_t unpack_format(uint64_t value, uint8_t format);
