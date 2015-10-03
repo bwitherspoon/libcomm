@@ -27,4 +27,7 @@ add_executable(aligned_allocator aligned_allocator.cpp)
 target_link_libraries(aligned_allocator ${Boost_LIBRARIES})
 add_test(aligned_allocator aligned_allocator)
 
+add_executable(oscillator oscillator.cpp)
+target_link_libraries(oscillator ${Boost_LIBRARIES})
+add_test(oscillator oscillator)
 
