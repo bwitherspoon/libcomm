@@ -23,11 +23,11 @@ BOOST_AUTO_TEST_CASE(message_test)
 
   comm::message msg;
 
-  msg.pack();
+  msg.serialize();
   msg << b << ui8 << i8 << f32 << i32;
-  msg.pack();
+  msg.serialize();
 
-  BOOST_REQUIRE_NO_THROW(msg.unpack());
+  BOOST_REQUIRE_NO_THROW(msg.deserialize());
 
   msg >> b_r >> u8_r >> ui8_r >> f32_r >> i32_r;
 
@@ -41,5 +41,5 @@ BOOST_AUTO_TEST_CASE(message_test)
 
   BOOST_CHECK_EQUAL(i32_r, i32_r);
 
-  BOOST_REQUIRE_NO_THROW(msg.unpack());
+  BOOST_REQUIRE_NO_THROW(msg.deserialize());
 }

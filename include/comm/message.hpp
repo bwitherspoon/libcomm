@@ -20,9 +20,6 @@ namespace comm
 
 /**
  * \brief A class for serializing and deserializing messages
- *
- *  See https://github.com/msgpack/msgpack/blob/master/spec.md for the
- *  serialization format.
  */
 class message
 {
@@ -71,14 +68,14 @@ public:
   };
 
   //! An exception thrown on deserialization errors
-  struct unpack_error : public std::runtime_error
+  struct deserialize_error : public std::runtime_error
   {
-    explicit unpack_error(const std::string& loc, const std::string& msg) :
+    explicit deserialize_error(const std::string& loc, const std::string& msg) :
         std::runtime_error(loc + ": " + msg)
     {
     }
-    explicit unpack_error(const char* loc, const char* msg) :
-        unpack_error(std::string(loc), std::string(msg))
+    explicit deserialize_error(const char* loc, const char* msg) :
+        deserialize_error(std::string(loc), std::string(msg))
     {
     }
   };
@@ -101,57 +98,57 @@ public:
   //! Set the message to an empty state
   void clear();
 
-  //! Reset the message so it can be unpacked again
+  //! Reset the message so it can be serialized again
   void reset() { m_pos = 0; }
 
   //! Serialize a nil type
-  message& pack();
+  message& serialize();
 
   //! Serialize a boolean type
-  message& pack(bool value);
+  message& serialize(bool value);
 
   //! Serialize a 64 bit unsigned integer type
-  message& pack(uint64_t value);
+  message& serialize(uint64_t value);
 
   //! Serialize a 32 bit unsigned integer type
-  message& pack(uint32_t value);
+  message& serialize(uint32_t value);
 
   //! Serialize a 16 bit unsigned integer type
-  message& pack(uint16_t value);
+  message& serialize(uint16_t value);
 
   //! Serialize a 8 bit unsigned integer type
-  message& pack(uint8_t value);
+  message& serialize(uint8_t value);
 
   //! Serialize a 64 bit signed integer type
-  message& pack(int64_t value);
+  message& serialize(int64_t value);
 
   //! Serialize a 32 bit signed integer type
-  message& pack(int32_t value);
+  message& serialize(int32_t value);
 
   //! Serialize a 16 bit signed integer type
-  message& pack(int16_t value);
+  message& serialize(int16_t value);
 
   //! Serialize a 8 bit signed integer type
-  message& pack(int8_t value);
+  message& serialize(int8_t value);
 
   //! Serialize a single precision floating point type
-  message& pack(float value);
+  message& serialize(float value);
 
   //! Serialize a double precision floating point type
-  message& pack(double value);
+  message& serialize(double value);
 
   //! Serialize any supported type
-  template<typename T> message& operator<<(T value) { return pack(value); }
+  template<typename T> message& operator<<(T value) { return serialize(value); }
 
   //! Deserialize a nil type
-  message& unpack();
+  message& deserialize();
 
   //! Deserialize any supported type
-  template<typename T> message& unpack(T& value);
+  template<typename T> message& deserialize(T& value);
 
   //! Deserialize any supported type
   template<typename T>
-  message& operator>>(T& value) { return unpack(value); }
+  message& operator>>(T& value) { return deserialize(value); }
 
 private:
   static uint64_t betoh(uint64_t val)
@@ -269,25 +266,25 @@ private:
     return val;
   }
 
-  uint64_t unpack_format(uint64_t value, uint8_t format);
+  uint64_t deserialize_format(uint64_t value, uint8_t format);
 
-  uint32_t unpack_format(uint32_t value, uint8_t format);
+  uint32_t deserialize_format(uint32_t value, uint8_t format);
 
-  uint16_t unpack_format(uint16_t value, uint8_t format);
+  uint16_t deserialize_format(uint16_t value, uint8_t format);
 
-  uint8_t unpack_format(uint8_t value, uint8_t format);
+  uint8_t deserialize_format(uint8_t value, uint8_t format);
 
-  int64_t unpack_format(int64_t value, uint8_t format);
+  int64_t deserialize_format(int64_t value, uint8_t format);
 
-  int32_t unpack_format(int32_t value, uint8_t format);
+  int32_t deserialize_format(int32_t value, uint8_t format);
 
-  int16_t unpack_format(int16_t value, uint8_t format);
+  int16_t deserialize_format(int16_t value, uint8_t format);
 
-  int8_t unpack_format(int8_t value, uint8_t format);
+  int8_t deserialize_format(int8_t value, uint8_t format);
 
-  double unpack_format(double value, uint8_t format);
+  double deserialize_format(double value, uint8_t format);
 
-  float unpack_format(float value, uint8_t format);
+  float deserialize_format(float value, uint8_t format);
 
   uint8_t* data() { return m_data.data(); }
 
@@ -386,7 +383,7 @@ void message::insert(const T& data)
 uint8_t message::extract()
 {
   if (m_data.size() - m_pos < 1)
-    throw unpack_error(__func__, "message size insufficient");
+    throw deserialize_error(__func__, "message size insufficient");
 
   return m_data[m_pos];
 }
@@ -395,7 +392,7 @@ template<typename T>
 T& message::extract(T& data)
 {
   if (m_data.size() - m_pos < sizeof(data))
-    throw unpack_error(__func__, "message size insufficient");
+    throw deserialize_error(__func__, "message size insufficient");
 
   uint8_t* result = reinterpret_cast<uint8_t*>(&data);
 
@@ -432,19 +429,19 @@ void message::clear()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-message& message::pack()
+message& message::serialize()
 {
   insert(formats::nil);
   return *this;
 }
 
-message& message::pack(bool value)
+message& message::serialize(bool value)
 {
   insert((value) ? formats::booltrue : formats::boolfalse);
   return *this;
 }
 
-message& message::pack(uint64_t value)
+message& message::serialize(uint64_t value)
 {
   if (value > std::numeric_limits<uint32_t>::max())
   {
@@ -453,12 +450,12 @@ message& message::pack(uint64_t value)
   }
   else
   {
-    pack(static_cast<uint32_t>(value));
+    serialize(static_cast<uint32_t>(value));
   }
   return *this;
 }
 
-message& message::pack(uint32_t value)
+message& message::serialize(uint32_t value)
 {
   if (value > std::numeric_limits<uint16_t>::max())
   {
@@ -467,12 +464,12 @@ message& message::pack(uint32_t value)
   }
   else
   {
-    pack(static_cast<uint16_t>(value));
+    serialize(static_cast<uint16_t>(value));
   }
   return *this;
 }
 
-message& message::pack(uint16_t value)
+message& message::serialize(uint16_t value)
 {
   if (value > std::numeric_limits<uint8_t>::max())
   {
@@ -481,12 +478,12 @@ message& message::pack(uint16_t value)
   }
   else
   {
-    pack(static_cast<uint8_t>(value));
+    serialize(static_cast<uint8_t>(value));
   }
   return *this;
 }
 
-message& message::pack(uint8_t value)
+message& message::serialize(uint8_t value)
 {
   if (value < (1 << 7))
   {
@@ -500,7 +497,7 @@ message& message::pack(uint8_t value)
   return *this;
 }
 
-message& message::pack(int64_t value)
+message& message::serialize(int64_t value)
 {
   constexpr int32_t min = std::numeric_limits<int32_t>::min();
   constexpr int32_t max = std::numeric_limits<int32_t>::max();
@@ -512,13 +509,13 @@ message& message::pack(int64_t value)
   }
   else
   {
-    pack(static_cast<int32_t>(value));
+    serialize(static_cast<int32_t>(value));
   }
 
   return *this;
 }
 
-message& message::pack(int32_t value)
+message& message::serialize(int32_t value)
 {
   constexpr int16_t min = std::numeric_limits<int16_t>::min();
   constexpr int16_t max = std::numeric_limits<int16_t>::max();
@@ -530,13 +527,13 @@ message& message::pack(int32_t value)
   }
   else
   {
-    pack(static_cast<int16_t>(value));
+    serialize(static_cast<int16_t>(value));
   }
 
   return *this;
 }
 
-message& message::pack(int16_t value)
+message& message::serialize(int16_t value)
 {
   constexpr int8_t min = std::numeric_limits<int8_t>::min();
   constexpr int8_t max = std::numeric_limits<int8_t>::max();
@@ -548,13 +545,13 @@ message& message::pack(int16_t value)
   }
   else
   {
-    pack(static_cast<int8_t>(value));
+    serialize(static_cast<int8_t>(value));
   }
 
   return *this;
 }
 
-message& message::pack(int8_t value)
+message& message::serialize(int8_t value)
 {
   if (value < -(1 << 5))
   {
@@ -568,7 +565,7 @@ message& message::pack(int8_t value)
   return *this;
 }
 
-message& message::pack(float value)
+message& message::serialize(float value)
 {
   constexpr bool predicate = std::numeric_limits<float>::is_iec559;
   static_assert(predicate,
@@ -580,7 +577,7 @@ message& message::pack(float value)
   return *this;
 }
 
-message& message::pack(double value)
+message& message::serialize(double value)
 {
   constexpr bool predicate = std::numeric_limits<double>::is_iec559;
   static_assert(predicate,
@@ -594,7 +591,7 @@ message& message::pack(double value)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint64_t message::unpack_format(uint64_t value, uint8_t format)
+uint64_t message::deserialize_format(uint64_t value, uint8_t format)
 {
   uint64_t result;
 
@@ -605,13 +602,13 @@ uint64_t message::unpack_format(uint64_t value, uint8_t format)
   }
   else
   {
-    result = unpack_format(static_cast<uint32_t>(value), format);
+    result = deserialize_format(static_cast<uint32_t>(value), format);
   }
 
   return result;
 }
 
-uint32_t message::unpack_format(uint32_t value, uint8_t format)
+uint32_t message::deserialize_format(uint32_t value, uint8_t format)
 {
   uint32_t result;
 
@@ -622,13 +619,13 @@ uint32_t message::unpack_format(uint32_t value, uint8_t format)
   }
   else
   {
-    result = unpack_format(static_cast<uint16_t>(value), format);
+    result = deserialize_format(static_cast<uint16_t>(value), format);
   }
 
   return result;
 }
 
-uint16_t message::unpack_format(uint16_t value, uint8_t format)
+uint16_t message::deserialize_format(uint16_t value, uint8_t format)
 {
   uint16_t result;
 
@@ -639,13 +636,13 @@ uint16_t message::unpack_format(uint16_t value, uint8_t format)
   }
   else
   {
-    result = unpack_format(static_cast<uint8_t>(value), format);
+    result = deserialize_format(static_cast<uint8_t>(value), format);
   }
 
   return result;
 }
 
-uint8_t message::unpack_format(uint8_t value, uint8_t format)
+uint8_t message::deserialize_format(uint8_t value, uint8_t format)
 {
   uint8_t result;
 
@@ -660,13 +657,13 @@ uint8_t message::unpack_format(uint8_t value, uint8_t format)
   }
   else
   {
-    throw unpack_error(__func__, "failed to unpack a positive integer object");
+    throw deserialize_error(__func__, "failed to deserialize a positive integer object");
   }
 
   return result;
 }
 
-int64_t message::unpack_format(int64_t value, uint8_t format)
+int64_t message::deserialize_format(int64_t value, uint8_t format)
 {
   int64_t result;
 
@@ -677,13 +674,13 @@ int64_t message::unpack_format(int64_t value, uint8_t format)
   }
   else
   {
-    result = unpack_format(static_cast<int32_t>(value), format);
+    result = deserialize_format(static_cast<int32_t>(value), format);
   }
 
   return result;
 }
 
-int32_t message::unpack_format(int32_t value, uint8_t format)
+int32_t message::deserialize_format(int32_t value, uint8_t format)
 {
   int32_t result;
 
@@ -694,13 +691,13 @@ int32_t message::unpack_format(int32_t value, uint8_t format)
   }
   else
   {
-    result = unpack_format(static_cast<int16_t>(value), format);
+    result = deserialize_format(static_cast<int16_t>(value), format);
   }
 
   return result;
 }
 
-int16_t message::unpack_format(int16_t value, uint8_t format)
+int16_t message::deserialize_format(int16_t value, uint8_t format)
 {
   int16_t result;
 
@@ -711,13 +708,13 @@ int16_t message::unpack_format(int16_t value, uint8_t format)
   }
   else
   {
-    result = unpack_format(static_cast<int8_t>(value), format);
+    result = deserialize_format(static_cast<int8_t>(value), format);
   }
 
   return result;
 }
 
-int8_t message::unpack_format(int8_t value, uint8_t format)
+int8_t message::deserialize_format(int8_t value, uint8_t format)
 {
   int8_t result;
 
@@ -732,13 +729,13 @@ int8_t message::unpack_format(int8_t value, uint8_t format)
   }
   else
   {
-    throw unpack_error(__func__, "failed to unpack a negative integer object");
+    throw deserialize_error(__func__, "failed to deserialize a negative integer object");
   }
 
   return result;
 }
 
-double message::unpack_format(double value, uint8_t format)
+double message::deserialize_format(double value, uint8_t format)
 {
   double result;
 
@@ -749,13 +746,13 @@ double message::unpack_format(double value, uint8_t format)
   }
   else
   {
-    result = unpack_format(static_cast<float>(value), format);
+    result = deserialize_format(static_cast<float>(value), format);
   }
 
   return result;
 }
 
-float message::unpack_format(float value, uint8_t format)
+float message::deserialize_format(float value, uint8_t format)
 {
   float result;
 
@@ -766,7 +763,7 @@ float message::unpack_format(float value, uint8_t format)
   }
   else
   {
-    throw unpack_error(__func__, "failed to unpack a floating point object");
+    throw deserialize_error(__func__, "failed to deserialize a floating point object");
   }
 
   return result;
@@ -774,10 +771,10 @@ float message::unpack_format(float value, uint8_t format)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-message& message::unpack()
+message& message::deserialize()
 {
   if (extract() != formats::nil)
-    throw unpack_error(__func__, "failed to unpack a nil object");
+    throw deserialize_error(__func__, "failed to deserialize a nil object");
 
   m_pos++;
 
@@ -785,7 +782,7 @@ message& message::unpack()
 }
 
 template<typename T>
-message& message::unpack(T& value)
+message& message::deserialize(T& value)
 {
   auto format = extract();
 
@@ -793,9 +790,9 @@ message& message::unpack(T& value)
 
   try
   {
-    value = unpack_format(value, format);
+    value = deserialize_format(value, format);
   }
-  catch (const unpack_error&)
+  catch (const deserialize_error&)
   {
     m_pos--;
     throw;
@@ -805,7 +802,7 @@ message& message::unpack(T& value)
 }
 
 template<>
-message& message::unpack<bool>(bool& value)
+message& message::deserialize<bool>(bool& value)
 {
   uint8_t format = extract();
 
@@ -814,7 +811,7 @@ message& message::unpack<bool>(bool& value)
   else if (format == formats::booltrue)
     value = true;
   else
-    throw unpack_error(__func__, "failed to unpack a boolean object");
+    throw deserialize_error(__func__, "failed to deserialize a boolean object");
 
   m_pos++;
 
