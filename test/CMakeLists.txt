@@ -22,3 +22,8 @@ add_test(math_test math_test)
 add_executable(buffer_test buffer_test.cpp)
 target_link_libraries(buffer_test ${Boost_LIBRARIES})
 add_test(buffer_test buffer_test)
+
+add_executable(aligned_allocator_test aligned_allocator_test.cpp)
+target_link_libraries(aligned_allocator_test ${Boost_LIBRARIES})
+add_test(aligned_allocator_test aligned_allocator_test)
+
