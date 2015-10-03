@@ -1,7 +1,7 @@
 Comm
 ====
 
-This is a library for building communication and sensing systems.
+This is a library for communication systems.
 
 Dependencies
 ------------
