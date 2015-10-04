@@ -10,7 +10,7 @@
 namespace comm
 {
 /**
- *
+ * An oscillator with real output
  */
 template<typename T>
 class oscillator
@@ -18,14 +18,19 @@ class oscillator
 public:
   using sample_type = T;
 
+  //! Construct an oscillator with real output
   oscillator(T frequency, T sample_rate, T amplitude = 1);
 
+  //! Execute the oscillator
   template<typename U> void operator()(U& output);
 
+  //! Returns the frequency of the oscillator
   T frequency() { return m_freq; }
 
+  //! Returns the sample rate of the oscillator
   T sample_rate() { return m_rate; }
 
+  //! Returns the amplitude of the oscillator
   T amplitude() { return m_ampl; }
 
 private:
@@ -68,7 +73,7 @@ void oscillator<T>::operator()(U& output)
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- *
+ * An oscillator with complex output
  */
 template<typename T>
 class oscillator<std::complex<T>>
@@ -76,15 +81,11 @@ class oscillator<std::complex<T>>
 public:
   using sample_type = std::complex<T>;
 
+  //! Construct an oscillator with complex output
   oscillator(T frequency, T sample_rate, T amplitude = 1);
 
+  //! Execute the oscillator
   template<typename U> void operator()(U& output);
-
-  T frequency() { return m_freq; }
-
-  T sample_rate() { return m_rate; }
-
-  T amplitude() { return m_ampl; }
 
 private:
   T m_freq;
