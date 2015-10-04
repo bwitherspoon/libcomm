@@ -7,37 +7,37 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable(
-    message
+    message_test
     ${comm_SOURCE_DIR}/src/endian.cpp
     ${comm_SOURCE_DIR}/src/message.cpp
-    message.cpp)
-target_link_libraries(message ${Boost_LIBRARIES})
-add_test(message message)
+    message_test.cpp)
+target_link_libraries(message_test ${Boost_LIBRARIES})
+add_test(message_test message_test)
 
 add_executable(
-    socket
+    socket_test
     ${comm_SOURCE_DIR}/src/socket.cpp
     ${comm_SOURCE_DIR}/src/context.cpp
     ${comm_SOURCE_DIR}/src/endian.cpp
     ${comm_SOURCE_DIR}/src/message.cpp
-    socket.cpp)
-target_link_libraries(socket ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES})
-target_include_directories(socket PRIVATE ${ZeroMQ_INCLUDE_DIRS})
-add_test(socket socket)
+    socket_test.cpp)
+target_link_libraries(socket_test ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES})
+target_include_directories(socket_test PRIVATE ${ZeroMQ_INCLUDE_DIRS})
+add_test(socket_test socket_test)
 
-add_executable(math math.cpp)
-target_link_libraries(math ${Boost_LIBRARIES})
-add_test(math math)
+add_executable(math_test math_test.cpp)
+target_link_libraries(math_test ${Boost_LIBRARIES})
+add_test(math_test math_test)
 
-add_executable(buffer buffer.cpp)
-target_link_libraries(buffer ${Boost_LIBRARIES})
-add_test(buffer buffer)
+add_executable(buffer_test buffer_test.cpp)
+target_link_libraries(buffer_test ${Boost_LIBRARIES})
+add_test(buffer_test buffer_test)
 
-add_executable(aligned_allocator aligned_allocator.cpp)
-target_link_libraries(aligned_allocator ${Boost_LIBRARIES})
-add_test(aligned_allocator aligned_allocator)
+add_executable(aligned_allocator_test aligned_allocator_test.cpp)
+target_link_libraries(aligned_allocator_test ${Boost_LIBRARIES})
+add_test(aligned_allocator_test aligned_allocator_test)
 
-add_executable(oscillator oscillator.cpp)
-target_link_libraries(oscillator ${Boost_LIBRARIES})
-add_test(oscillator oscillator)
+add_executable(oscillator_test oscillator_test.cpp)
+target_link_libraries(oscillator_test ${Boost_LIBRARIES})
+add_test(oscillator_test oscillator_test)
 
