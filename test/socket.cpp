@@ -6,6 +6,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "comm/socket.hpp"
+#include "comm/message.hpp"
 
 BOOST_AUTO_TEST_CASE(socket_test)
 {

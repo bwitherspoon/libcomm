@@ -6,11 +6,21 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-add_executable(message message.cpp)
+add_executable(
+    message
+    ${comm_SOURCE_DIR}/src/endian.cpp
+    ${comm_SOURCE_DIR}/src/message.cpp
+    message.cpp)
 target_link_libraries(message ${Boost_LIBRARIES})
 add_test(message message)
 
-add_executable(socket socket.cpp)
+add_executable(
+    socket
+    ${comm_SOURCE_DIR}/src/socket.cpp
+    ${comm_SOURCE_DIR}/src/context.cpp
+    ${comm_SOURCE_DIR}/src/endian.cpp
+    ${comm_SOURCE_DIR}/src/message.cpp
+    socket.cpp)
 target_link_libraries(socket ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES})
 target_include_directories(socket PRIVATE ${ZeroMQ_INCLUDE_DIRS})
 add_test(socket socket)

@@ -2,48 +2,47 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef INCLUDE_COMM_SOCKET_HPP_
-#define INCLUDE_COMM_SOCKET_HPP_
+#ifndef SOCKET_HPP_
+#define SOCKET_HPP_
 
-#include <zmq.h>
 #include <memory>
 #include <stdexcept>
 #include <string>
 
-#include "comm/message.hpp"
-
 namespace comm
 {
+
+class message;
+
 //! A messaging socket
 class socket
 {
-  friend class context;
 public:
+  friend class context;
+
   enum class types
   {
-    request = ZMQ_REQ,
-    reply   = ZMQ_REP
+    request = 3,
+    reply   = 4
   };
 
   //! An exception thrown on message socket errors
   struct socket_error : public std::runtime_error
   {
-    explicit socket_error(const std::string& where, const std::string& what) :
-        std::runtime_error(where + ": " + what)
-    {
-    }
-    explicit socket_error(const std::string& where) :
-        socket_error(where, zmq_strerror(zmq_errno()))
-    {
-    }
+    explicit socket_error(const std::string& where, const std::string& what);
+    explicit socket_error(const std::string& where);
   };
 
+  //! A socket can not be copy constructed
   socket(const socket&) = delete;
 
+  //! A socket can not be copy assigned
   socket& operator=(const socket&) = delete;
 
-  socket(socket&&)  = delete;
+  //! A socket can not be move constructed
+  socket(socket&&) = delete;
 
+  //! A socket can not be move assigned
   socket& operator=(socket&& other) = delete;
 
   //! Deconstructs a message socket
@@ -86,68 +85,6 @@ private:
   void* m_socket; //!< A ZeroMQ socket
 };
 
-socket::socket(void* context, socket::types type)
-{
-  m_socket = zmq_socket(context, static_cast<int>(type));
-  if (m_socket == nullptr)
-    throw socket_error(__func__);
-}
-
-socket::~socket()
-{
-  const int ms = 500;
-  zmq_setsockopt(m_socket, ZMQ_LINGER, &ms, sizeof(int));
-  zmq_close(m_socket);
-}
-
-socket& socket::bind(const std::string& addr)
-{
-  if (zmq_bind(m_socket, addr.c_str()) != 0)
-    throw socket_error(__func__);
-
-  return *this;
-}
-
-socket& socket::connect(const std::string& addr)
-{
-  if (zmq_connect(m_socket, addr.c_str()) != 0 )
-    throw socket_error(__func__);
-
-  return *this;
-}
-
-socket& socket::send(const message& msg)
-{
-  auto data = msg.data();
-  auto size = msg.size();
-
-  if (zmq_send(m_socket, data, size, 0) == -1)
-    throw socket_error(__func__);
-
-  return *this;
-}
-
-socket& socket::recv(message& msg)
-{
-  const std::size_t size = 1024;
-  msg.resize(size);
-
-  auto data = msg.data();
-
-  int count = zmq_recv(m_socket, data, size, 0);
-
-  if (count < 0)
-    throw socket_error(__func__);
-
-  if (static_cast<std::size_t>(count) > size)
-    throw socket_error(__func__, "message truncated");
-
-  msg.resize(static_cast<std::size_t>(count));
-  msg.reset();
-
-  return *this;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 /*! \brief A messaging context
@@ -181,23 +118,6 @@ private:
   void* m_context;
 };
 
-context::context()
-{
-  m_context = zmq_ctx_new();
-  if (m_context == nullptr)
-    throw socket::socket_error(__func__);
-}
-
-context::~context()
-{
-  zmq_ctx_destroy(m_context);
-}
-
-std::unique_ptr<socket> context::make_socket(socket::types type)
-{
-  return std::unique_ptr<socket>(new socket(m_context, type));
-}
-
 } /* namespace comm */
 
-#endif /* INCLUDE_COMM_SOCKET_HPP_ */
+#endif /* SOCKET_HPP_ */
