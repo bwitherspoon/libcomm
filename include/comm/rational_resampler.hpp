@@ -10,9 +10,7 @@
 #include <complex>
 
 namespace comm {
-/**
- *  A rational resampler
- */
+//! A rational resampler
 template<unsigned int I,
          unsigned int D,
          size_t M,

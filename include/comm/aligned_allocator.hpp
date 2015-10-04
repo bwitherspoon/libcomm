@@ -11,9 +11,7 @@
 
 namespace comm
 {
-/**
- * An STL compatible 16-byte aligned memory allocator
- */
+//! An STL compatible 16-byte aligned memory allocator
 template <typename T>
 class aligned_allocator
 {

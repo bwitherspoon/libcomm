@@ -9,9 +9,7 @@
 
 namespace comm
 {
-/**
- * An oscillator with real output
- */
+//! An oscillator with real output
 template<typename T>
 class oscillator
 {
@@ -72,9 +70,7 @@ void oscillator<T>::operator()(U& output)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/**
- * An oscillator with complex output
- */
+//! An oscillator with complex output
 template<typename T>
 class oscillator<std::complex<T>>
 {
