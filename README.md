@@ -20,26 +20,26 @@ Required to build documentation:
 Getting Started
 ---------------
 
-Clone the repository and compile in a subdirectory:
+Clone the repository and build in a subdirectory:
 
     git clone https://github.com/spoonb/comm.git
     cd comm
     mkdir build
     cd build
-    cmake -DCMAKE_BUILD_TYPE=Release ..
+    cmake ..
     make
 
 Run the tests:
 
     make test
 
-Currently no files are installed and only the tests can be run.
+Install the library, headers, and executables:
+
+    make install
 
 Documentation
 -------------
 
-Run [Doxygen](http://www.doxygen.org) from the *doc* subdirectory:
-
-    cd doc
-    doxygen
+If [Doxygen](http://www.doxygen.org) is found the documentation will be
+generated in the *doc* subdirectory.
 
