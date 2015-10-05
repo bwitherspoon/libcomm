@@ -23,6 +23,7 @@ add_compile_options(-march=native -std=gnu++11 -Werror -Wall -pipe)
 
 include_directories(include)
 
+find_package(Doxygen)
 find_package(ZeroMQ REQUIRED)
 
 add_library(
@@ -37,8 +38,13 @@ target_link_libraries(comm ${ZeroMQ_LIBRARIES})
 install(TARGETS comm DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+if(DOXYGEN_FOUND)
+    add_subdirectory(doc)
+endif()
 
 enable_testing()
 add_subdirectory(test)
+
+message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
