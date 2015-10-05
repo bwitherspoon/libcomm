@@ -1,23 +1,44 @@
 # Copyright 2015 C. Brett Witherspoon
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
+
+if (DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING
+        "Choose the type of build: Debug Release ReleaseWithDebInfo MinSizeRel")
+else()
+    set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+        "Choose the type of build: Debug Release ReleaseWithDebInfo MinSizeRel")
+endif()
+
 project(comm CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+include(GNUInstallDirs)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+
+add_compile_options(-march=native -std=gnu++11 -Werror -Wall -pipe)
+
+include_directories(include)
+
 find_package(ZeroMQ REQUIRED)
 
-if (CMAKE_VERSION VERSION_LESS 2.8.12)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -std=gnu++11 -Werror -Wall -pipe")
-else()
-  add_compile_options(-march=native -std=gnu++11 -Werror -Wall -pipe)
-endif()
+add_library(
+    comm
+    SHARED
+    src/context.cpp
+    src/endian.cpp
+    src/message.cpp
+    src/socket.cpp)
+target_link_libraries(comm ${ZeroMQ_LIBRARIES})
+
+install(TARGETS comm DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 enable_testing()
-
-include_directories(include)
-
 add_subdirectory(test)
