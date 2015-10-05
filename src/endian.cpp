@@ -3,9 +3,12 @@
  */
 
 #include <cstring>
-#include "comm/endian.hpp"
+
+#include "comm/util/endian.hpp"
 
 namespace comm
+{
+namespace util
 {
 int64_t betoh(int64_t val)
 {
@@ -90,4 +93,5 @@ float htobe(float val)
   std::memcpy(&val, &dat, sizeof(dat));
   return val;
 }
+} /* namespace util */
 } /* namespace comm */

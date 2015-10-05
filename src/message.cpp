@@ -5,7 +5,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "comm/endian.hpp"
+#include "comm/util/endian.hpp"
 #include "comm/message.hpp"
 
 namespace comm {
@@ -42,7 +42,7 @@ message& message::serialize(uint64_t value)
   if (value > std::numeric_limits<uint32_t>::max())
   {
     insert(formats::uint64);
-    insert(htobe(value));
+    insert(util::htobe(value));
   }
   else
   {
@@ -56,7 +56,7 @@ message& message::serialize(uint32_t value)
   if (value > std::numeric_limits<uint16_t>::max())
   {
     insert(formats::uint32);
-    insert(htobe(value));
+    insert(util::htobe(value));
   }
   else
   {
@@ -70,7 +70,7 @@ message& message::serialize(uint16_t value)
   if (value > std::numeric_limits<uint8_t>::max())
   {
     insert(formats::uint16);
-    insert(htobe(value));
+    insert(util::htobe(value));
   }
   else
   {
@@ -101,7 +101,7 @@ message& message::serialize(int64_t value)
   if (value < min or value > max)
   {
     insert(formats::int64);
-    insert(htobe(value));
+    insert(util::htobe(value));
   }
   else
   {
@@ -119,7 +119,7 @@ message& message::serialize(int32_t value)
   if (value < min or value > max)
   {
     insert(formats::int32);
-    insert(htobe(value));
+    insert(util::htobe(value));
   }
   else
   {
@@ -137,7 +137,7 @@ message& message::serialize(int16_t value)
   if (value < min or value > max)
   {
     insert(formats::int16);
-    insert(htobe(value));
+    insert(util::htobe(value));
   }
   else
   {
@@ -168,7 +168,7 @@ message& message::serialize(float value)
       "native single precision floating point type is not IEEE 754 format");
 
   insert(formats::float32);
-  insert(htobe(value));
+  insert(util::htobe(value));
 
   return *this;
 }
@@ -180,7 +180,7 @@ message& message::serialize(double value)
       "native double precision floating point type is not IEEE 754 format");
 
   insert(formats::float64);
-  insert(htobe(value));
+  insert(util::htobe(value));
 
   return *this;
 }
@@ -220,7 +220,7 @@ uint64_t message::deserialize_format(uint64_t value, uint8_t format)
 
   if (format == formats::uint64)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else
@@ -237,7 +237,7 @@ uint32_t message::deserialize_format(uint32_t value, uint8_t format)
 
   if (format == formats::uint32)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else
@@ -254,7 +254,7 @@ uint16_t message::deserialize_format(uint16_t value, uint8_t format)
 
   if (format == formats::uint16)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else
@@ -292,7 +292,7 @@ int64_t message::deserialize_format(int64_t value, uint8_t format)
 
   if (format == formats::int64)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else
@@ -309,7 +309,7 @@ int32_t message::deserialize_format(int32_t value, uint8_t format)
 
   if (format == formats::int32)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else
@@ -326,7 +326,7 @@ int16_t message::deserialize_format(int16_t value, uint8_t format)
 
   if (format == formats::int16)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else
@@ -364,7 +364,7 @@ double message::deserialize_format(double value, uint8_t format)
 
   if (format == formats::float64)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else
@@ -381,7 +381,7 @@ float message::deserialize_format(float value, uint8_t format)
 
   if (format == formats::float32)
   {
-    result = betoh(extract(value));
+    result = util::betoh(extract(value));
     m_pos += sizeof(value);
   }
   else

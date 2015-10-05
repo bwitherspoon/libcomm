@@ -10,6 +10,8 @@
 
 namespace comm
 {
+namespace util
+{
 //! Convert big endian to host byte order
 inline uint64_t betoh(uint64_t val) { return be64toh(val); }
 
@@ -57,6 +59,7 @@ double htobe(double val);
 
 //! Convert host to big endian byte order
 float htobe(float val);
+} /* namespace util */
 } /* namespace comm */
 
 #endif /* ENDIAN_HPP_ */
