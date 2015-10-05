@@ -214,6 +214,9 @@ message& message::deserialize(T& value)
   return *this;
 }
 
+template<>
+message& message::deserialize<bool>(bool& value);
+
 template<typename T>
 void message::insert(const T& data)
 {
