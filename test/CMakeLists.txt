@@ -19,6 +19,10 @@ add_executable(math_test math_test.cpp)
 target_link_libraries(math_test ${Boost_LIBRARIES})
 add_test(math_test math_test)
 
+add_executable(fixed_test fixed_test.cpp)
+target_link_libraries(fixed_test ${Boost_LIBRARIES})
+add_test(fixed_test fixed_test)
+
 add_executable(buffer_test buffer_test.cpp)
 target_link_libraries(buffer_test comm ${Boost_LIBRARIES})
 add_test(buffer_test buffer_test)
