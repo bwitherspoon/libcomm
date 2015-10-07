@@ -37,9 +37,7 @@ Install the library, headers, and executables:
 
     make install
 
-Documentation
--------------
+Generate the documentation:
 
-If [Doxygen](http://www.doxygen.org) is found the documentation will be
-generated in the *doc* subdirectory.
+    make doc
 
