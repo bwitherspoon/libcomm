@@ -32,7 +32,8 @@ add_library(
     src/context.cpp
     src/endian.cpp
     src/message.cpp
-    src/socket.cpp)
+    src/socket.cpp
+    src/buffer.cpp)
 target_link_libraries(comm ${ZeroMQ_LIBRARIES})
 
 install(TARGETS comm DESTINATION ${CMAKE_INSTALL_LIBDIR})

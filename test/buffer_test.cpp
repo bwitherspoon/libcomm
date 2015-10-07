@@ -13,17 +13,16 @@
 
 BOOST_AUTO_TEST_CASE(buffer_test)
 {
-  const std::size_t size = 2048;
-
-  auto buf = comm::make_buffer_pair<float>(size);
-  auto in = std::move(buf.first);
-  auto out = std::move(buf.second);
+  const size_t sz = 2047;
+  auto wr = comm::buffer::writer<float>(sz);
+  auto rd = wr.make_reader();
 
   // Test construction invariants
-  BOOST_REQUIRE_GE(in->size(), size);
-  BOOST_REQUIRE_EQUAL(out->size(), 0);
+  BOOST_REQUIRE_EQUAL(wr.size(), sz);
+  BOOST_REQUIRE_EQUAL(rd.size(), 0);
 
-  std::vector<float> ref(in->size());
+  // Generate random test data
+  std::vector<float> ref(wr.size());
 
   std::default_random_engine eng{};
   std::uniform_real_distribution<> dist{0.0, 1.0};
@@ -31,26 +30,26 @@ BOOST_AUTO_TEST_CASE(buffer_test)
 
   // Copy data into buffer and compare it with the output
   std::generate(ref.begin(), ref.end(), rand);
-  std::copy(ref.begin(), ref.end(), in->begin());
-  in->advance(ref.size());
+  std::copy(ref.begin(), ref.end(), wr.begin());
+  wr.consume(ref.size());
 
-  BOOST_REQUIRE_EQUAL(in->size(), 0);
-  BOOST_REQUIRE_EQUAL(out->size(), ref.size());
+  BOOST_REQUIRE_EQUAL(wr.size(), 0);
+  BOOST_REQUIRE_EQUAL(rd.size(), ref.size());
   BOOST_CHECK_EQUAL_COLLECTIONS(
-      ref.begin(), ref.end(), out->begin(), out->end());
+      ref.begin(), ref.end(), rd.begin(), rd.end());
 
-  out->advance(ref.size());
+  rd.consume(ref.size());
 
-  BOOST_REQUIRE_GE(in->size(), size);
-  BOOST_REQUIRE_EQUAL(out->size(), 0);
+  BOOST_REQUIRE_GE(wr.size(), ref.size());
+  BOOST_REQUIRE_EQUAL(rd.size(), 0);
 
   // Repeat to test circular buffering
-  ref.resize(in->size() / 2);
+  ref.resize(wr.size() / 2);
   std::generate(ref.begin(), ref.end(), rand);
-  std::copy(ref.begin(), ref.end(), in->begin());
-  in->advance(ref.size());
+  std::copy(ref.begin(), ref.end(), wr.begin());
+  wr.consume(ref.size());
 
-  BOOST_REQUIRE_EQUAL(out->size(), ref.size());
+  BOOST_REQUIRE_EQUAL(rd.size(), ref.size());
   BOOST_CHECK_EQUAL_COLLECTIONS(
-      ref.begin(), ref.end(), out->begin(), out->end());
+      ref.begin(), ref.end(), rd.begin(), rd.end());
 }

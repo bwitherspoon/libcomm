@@ -2,406 +2,261 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef BUFFER_HPP_
-#define BUFFER_HPP_
+#ifndef COMM_BUFFER_HPP_
+#define COMM_BUFFER_HPP_
 
-#include <sys/mman.h>
-#include <unistd.h>
-#include <atomic>
-#include <cerrno>
-#include <cstddef>
-#include <limits>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <system_error>
-#include <utility>
-
-#include "comm/math.hpp"
+#include <atomic>  // for std::atomic
+#include <cstddef> // for std::size_t
+#include <limits>  // for std::numeric_limits
+#include <memory>  // for std::shared_ptr
 
 namespace comm
 {
-//! \cond
-//! An input buffer tag
-struct input_buffer_tag { };
-//! An output buffer tag
-struct output_buffer_tag { };
-//! A dummy buffer tag
-struct dummy_buffer_tag { };
-//! \endcond
-
-template<typename ValueType, typename Tag>
-class buffer;
-
-//! An input buffer
-template<typename ValueType>
-using input_buffer = buffer<ValueType, input_buffer_tag>;
-
-//! An output buffer
-template<typename ValueType>
-using output_buffer = buffer<ValueType, output_buffer_tag>;
-
-//! A buffer input and output pair
-template<typename ValueType>
-using buffer_pair = std::pair<
-    std::unique_ptr<input_buffer<ValueType>>,
-        std::unique_ptr<output_buffer<ValueType>>>;
-
-template<typename T>
-buffer_pair<T> make_buffer_pair(std::size_t n);
-
-////////////////////////////////////////////////////////////////////////////////
-
-namespace internal
+namespace buffer
 {
-template<typename ValueType>
-class buffer_shared;
-} /* namespace internal */
 
-/**
- * \brief A single producer single consumer thread-safe buffer
- */
-template<typename ValueType, typename Tag>
-class buffer
+//! A class for buffer shared data
+class impl
 {
+    template<typename> friend class writer;
+    template<typename> friend class reader;
+    template<template<typename> class, typename> friend class base;
 public:
-  using value_type = ValueType;
-  using size_type = std::size_t;
-  using difference_type = std::ptrdiff_t;
-  using reference = value_type&;
-  using const_reference = const reference;
-  using pointer = value_type*;
-  using const_pointer = const pointer;
-  using iterator = pointer;
-  using const_iterator = const_pointer;
-
-  static const size_type alignment = alignof(value_type);
-
-  friend buffer_pair<value_type> make_buffer_pair<value_type>(size_t);
-
-  //! An exception thrown on buffer construction errors
-  struct buffer_error : public std::system_error
-  {
-    explicit buffer_error(const std::string& where, const std::string& what)
-        : std::system_error(errno, std::generic_category(), where + ": " + what)
-    { }
-  };
-
-  static_assert(std::numeric_limits<size_type>::is_modulo,
-      "buffer: size_type does not support modulo arithmetic");
-
-  //! A buffer is not copy constructible
-  buffer(const buffer<ValueType, Tag>&) = delete;
-
-  //! A buffer is not move constructible
-  buffer(buffer<ValueType, Tag>&&) = delete;
-
-  //! A buffer is not copy constructible
-  buffer<ValueType, Tag>&
-  operator=(const buffer<ValueType, Tag>&) = delete;
-
-  //! A buffer is not move constructible
-  buffer<ValueType, Tag>&
-  operator=(const buffer<ValueType, Tag>&&) = delete;
-
-  //! Returns an iterator to the beginning of the buffer
-  iterator begin()
-  {
-    return shared_->data_ + index();
-  }
-
-  //! Returns an iterator to the beginning of the buffer
-  const_iterator begin() const
-  {
-    return shared_->data_ + index();
-  }
-
-  //! Returns an iterator to the beginning of the buffer
-  const_iterator cbegin() const
-  {
-    return shared_->data_ + index();
-  }
-
-  //! Returns an iterator to the end of the buffer
-  iterator end()
-  {
-    return begin() + size();
-  }
-
-  //! Returns a iterator to the end of the buffer
-  const_iterator end() const
-  {
-    return begin() + size();
-  }
-
-  //! Returns a iterator to the end of the buffer
-  const_iterator cend() const
-  {
-    return begin() + size();
-  }
-
-  //! Checks whether the buffer is empty
-  bool empty() const
-  {
-    return shared_->in_ == shared_->out_;
-  };
-
-  //! Returns the number of items in the buffer
-  size_type size() const;
-
-  //! Returns the number of items that can be held plus one
-  size_type capacity() const
-  {
-    return shared_->size_;
-  }
-
-  //! The maximum number of items that can be held in a buffer
-  static constexpr size_type max_size()
-  {
-    return internal::buffer_shared<ValueType>::max_size();
-  }
-
-  //! Advances the current position in the buffer
-  void advance(size_type n);
-
+    explicit impl(size_t num_items, size_t item_size);
+    ~impl();
+    impl(const impl &) = delete;
+    impl(impl &&) = delete;
+    impl & operator=(const impl &) = delete;
+    impl & operator=(impl &&) = delete;
 private:
-  explicit buffer(std::shared_ptr<internal::buffer_shared<value_type>>& shared) :
-      shared_(shared)
-  {
-  }
-
-  size_type index() const
-  {
-    return index_dispatch(Tag());
-  }
-
-  size_type index_dispatch(input_buffer_tag) const
-  {
-    return shared_->in_;
-  }
-
-  size_type index_dispatch(output_buffer_tag) const
-  {
-    return shared_->out_;
-  }
-
-  void index(size_type i)
-  {
-    index_dispatch(i, Tag());
-  }
-
-  void index_dispatch(size_type i, input_buffer_tag)
-  {
-    shared_->in_ = i;
-  }
-
-  void index_dispatch(size_type i, output_buffer_tag)
-  {
-    shared_->out_ = i;
-  }
-
-  size_type distance() const
-  {
-    return distance_dispatch(Tag());
-  }
-
-  size_type distance_dispatch(input_buffer_tag) const
-  {
-    return shared_->out_ - shared_->in_ - 1;
-  }
-
-  size_type distance_dispatch(output_buffer_tag) const
-  {
-    return shared_->in_ - shared_->out_;
-  }
-
-  size_type underflow() const
-  {
-    return std::numeric_limits<size_type>::max() - capacity() + 1;
-  }
-
-  std::shared_ptr<internal::buffer_shared<value_type>> shared_;
+    void * d_base;
+    size_t d_size;
+    std::atomic<size_t> d_read;
+    std::atomic<size_t> d_write;
 };
 
-template<typename ValueType, typename Tag>
-typename buffer<ValueType, Tag>::size_type
-buffer<ValueType, Tag>::size() const
-{
-  size_type n = distance();
-
-  if (n >= underflow())
-    n -= underflow();
-
-  return n;
-}
-
-template<typename ValueType, typename Tag>
-void buffer<ValueType, Tag>::advance(size_type n)
-{
-  size_type i = index() + n;
-
-  if (i >= capacity())
-    i -= capacity();
-
-  index(i);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-namespace internal
-{
-/*!
- * Shared buffer data
- */
-template<typename ValueType>
-class buffer_shared
+//! A base class for a buffer
+template<template<typename> class U, typename T>
+class base
 {
 public:
-  friend input_buffer<ValueType>;
-  friend output_buffer<ValueType>;
+    using value_type      = T;
+    using size_type       = std::size_t;
+    using difference_type = std::ptrdiff_t;
+    using reference       = T &;
+    using const_reference = const T &;
+    using pointer         = T *;
+    using const_pointer   = const T *;
+    using iterator        = T *;
+    using const_iterator  = const T *;
 
-  explicit buffer_shared(std::size_t n);
+    static_assert(std::numeric_limits<size_type>::is_modulo,
+                  "buffer::base: size_type must support modulo arithmetic");
 
-  buffer_shared(const buffer_shared<ValueType>&) = delete;
+    //! Returns an iterator to the beginning of the buffer
+    iterator begin();
 
-  buffer_shared(buffer_shared<ValueType>&&) = delete;
+    //! Returns a constant iterator to the beginning of the buffer
+    const_iterator begin() const;
 
-  buffer_shared<ValueType>&
-  operator=(const buffer_shared<ValueType>&) = delete;
+    //! Returns a constant iterator to the beginning of the buffer
+    const_iterator cbegin() const { return begin(); }
 
-  buffer_shared<ValueType>&
-  operator=(const buffer_shared<ValueType>&&) = delete;
+    //! Returns an iterator to the end of the buffer
+    iterator end();
 
-  ~buffer_shared();
+    //! Returns a constant iterator to the end of the buffer
+    const_iterator end() const;
 
-  static constexpr std::size_t max_size();
+    //! Returns a constant iterator to the end of the buffer
+    const_iterator cend() const { return end(); }
 
-private:
-  static std::size_t sizeof_pages();
+    //! Checks whether the buffer is empty
+    bool empty() const { return d_impl->d_write == d_impl->d_read; }
 
-  static ValueType* allocate_pages(std::size_t n);
+    //! Returns the number of items in the buffer
+    size_type size() const;
 
-  static void deallocate_pages(ValueType* addr, std::size_t size);
+    //! Consume items from the buffer
+    void consume(size_type n);
 
-  ValueType* data_;
-  std::size_t size_;
-  std::atomic<std::size_t> in_;
-  std::atomic<std::size_t> out_;
+protected:
+    explicit base(size_type n);
+
+    explicit base(std::shared_ptr<impl> ptr);
+
+    base(const base &) = default;
+
+    base(base &&) = default;
+
+    base & operator=(const base &) = delete;
+
+    base & operator=(base && other) = delete;
+
+    std::shared_ptr<impl> d_impl;
 };
 
-/*! \brief The maximum number of items the buffer can hold
- *
- *   This value is limited to prevent overflow during mmap calls and the index
- *   wrapping logic.
- */
-template<typename ValueType>
-constexpr std::size_t buffer_shared<ValueType>::max_size()
+template<template<typename> class T, typename U>
+base<T,U>::base(size_type n)
+    : d_impl{std::make_shared<impl>(n, sizeof(U))}
+{ }
+
+template<template<typename> class T, typename U>
+base<T,U>::base(std::shared_ptr<impl> ptr)
+    : d_impl{ptr}
+{ }
+
+template<template<typename> class T, typename U>
+typename base<T,U>::iterator base<T,U>::begin()
 {
-  return std::numeric_limits<std::size_t>::max() /
-      comm::math::max(sizeof(ValueType), static_cast<std::size_t>(2));
+    const auto base = static_cast<pointer>(d_impl->d_base);
+    return base + static_cast<const T<U> *>(this)->position();
 }
 
-//! Determine the system page size
-template<typename ValueType>
-std::size_t buffer_shared<ValueType>::sizeof_pages()
+template<template<typename> class T, typename U>
+typename base<T,U>::const_iterator base<T,U>::begin() const
 {
-#if _POSIX_VERSION >= 200112L
-  long pagesize = sysconf(_SC_PAGESIZE);
-
-  if (pagesize == -1)
-    throw typename buffer<ValueType, dummy_buffer_tag>::buffer_error(__func__, "sysconf failed");
-
-  return static_cast<std::size_t>(pagesize);
-#else
-  #error("buffer: unsupported platform")
-#endif
+    const auto base = static_cast<pointer>(d_impl->d_base);
+    return base + static_cast<const T<U> *>(this)->position();
 }
 
-//! Allocates enough pages for at least n items
-template<typename ValueType>
-ValueType* buffer_shared<ValueType>::allocate_pages(std::size_t n)
+template<template<typename> class T, typename U>
+typename base<T,U>::iterator base<T,U>::end()
 {
-  const auto size = n * sizeof(ValueType);
-  const int prot = PROT_READ | PROT_WRITE;
-  const int flags = MAP_SHARED | MAP_ANONYMOUS;
-
-  // Create an anonymous memory mapping that is initialized to zero
-  void* addr = mmap(nullptr, 2*size, prot, flags, -1, 0);
-  if (addr == MAP_FAILED)
-    throw typename buffer<ValueType, dummy_buffer_tag>::buffer_error(__func__, "mmap failed");
-
-  // Remap the pages so the second half mirrors the first
-  // FIXME remap_file_pages has been deprecated
-  if (remap_file_pages(static_cast<char*>(addr) + size, size, 0, 0, 0) == -1)
-  {
-    typename buffer<ValueType, dummy_buffer_tag>::buffer_error e(__func__, "remap_file_pages failed");
-    munmap(addr, 2*size);;
-    throw e;
-  }
-
-  return static_cast<ValueType*>(addr);
+    return begin() + size();
 }
 
-//! Deallocates pages previously allocated with allocate_pages
-template<typename ValueType>
-void
-buffer_shared<ValueType>::deallocate_pages(ValueType* addr, std::size_t size)
+template<template<typename> class T, typename U>
+typename base<T,U>::const_iterator base<T,U>::end() const
 {
-  munmap(static_cast<void*>(addr), 2*size*sizeof(ValueType));
+    return begin() + size();
 }
 
-//! Constructs a buffer with space for at least n items
-template<typename ValueType>
-buffer_shared<ValueType>::buffer_shared(std::size_t n)
+template<template<typename> class T, typename U>
+typename base<T,U>::size_type base<T,U>::size() const
 {
-  using comm::math::gcd;
+    const auto max = std::numeric_limits<size_type>::max();
+    const auto underflow = max - d_impl->d_size / sizeof(U) + 1;
 
-  // Add an extra item to disambiguate full and empty conditions
-  n += 1;
+    auto sz = static_cast<const T<U> *>(this)->offset();
 
-  // Determine the number of items >= n required to end on a page boundary
-  const auto pagesize = sizeof_pages();
-  const auto granularity = pagesize / gcd(pagesize, sizeof(ValueType));
+    if (sz >= underflow)
+        sz -= underflow;
 
-  if (n % granularity)
-    size_ = (n / granularity + 1) * granularity;
-  else
-    size_ = n;
-
-  // Limit size to prevent overflow
-  if (size_ > max_size())
-    throw std::invalid_argument(__func__ + std::string(": size limit exceeded"));
-
-  data_ = allocate_pages(size_);
+    return sz;
 }
 
-//! Deallocates resources
-template<typename ValueType>
-buffer_shared<ValueType>::~buffer_shared()
+template<template<typename> class T, typename U>
+void base<T,U>::consume(size_type n)
 {
-  deallocate_pages(data_, size_);
-}
+    const auto overflow = d_impl->d_size / sizeof(U);
 
-} /* namespace internal */
+    auto pos = static_cast<const T<U> *>(this)->position() + n;
+
+    if (pos >= overflow)
+        pos -= overflow;
+
+    static_cast<T<U>*>(this)->position(pos);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//! Make an input and output buffer pair
+//! A class to read from a buffer
 template<typename T>
-buffer_pair<T> make_buffer_pair(std::size_t n)
+class reader : public base<reader,T>
 {
-  auto impl = std::make_shared<internal::buffer_shared<T>>(n);
+    template<typename> friend class writer;
+    template<template<typename> class, typename> friend class base;
+public:
+    using value_type      = T;
+    using size_type       = typename base<reader,T>::size_type;
+    using difference_type = typename base<reader,T>::difference_type;
+    using reference       = T &;
+    using const_reference = const T &;
+    using pointer         = T *;
+    using const_pointer   = const T *;
+    using iterator        = T *;
+    using const_iterator  = const T *;
 
-  // TODO C++14 introduces make_unique
-  auto in = std::unique_ptr<input_buffer<T>>(new input_buffer<T>(impl));
+private:
+    using base_type = base<reader,value_type>;
 
-  auto out = std::unique_ptr<output_buffer<T>>(new output_buffer<T>(impl));
+    explicit reader(std::shared_ptr<impl> ptr);
 
-  return std::make_pair(std::move(in), std::move(out));
-}
+    size_type offset() const
+    {
+        return base_type::d_impl->d_write - base_type::d_impl->d_read;
+    }
+
+    size_type position() const
+    {
+        return base_type::d_impl->d_read;
+    }
+
+    void position(size_type pos)
+    {
+        base_type::d_impl->d_read = pos;
+    }
+};
+
+template<typename T>
+reader<T>::reader(std::shared_ptr<impl> ptr)
+    : base<reader,T>(ptr)
+{ }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-} /* namespace comm */
+//! A class to write to a buffer
+template<typename T>
+class writer : public base<writer,T>
+{
+    template<template<typename> class, typename> friend class base;
+public:
+    using value_type      = T;
+    using size_type       = typename base<reader,T>::size_type;
+    using difference_type = typename base<reader,T>::difference_type;
+    using reference       = T &;
+    using const_reference = const T &;
+    using pointer         = T *;
+    using const_pointer   = const T *;
+    using iterator        = T *;
+    using const_iterator  = const T *;
 
-#endif /* BUFFER_HPP_ */
+    explicit writer(size_type n);
+
+    reader<value_type> make_reader();
+
+private:
+    using base_type = base<writer,value_type>;
+
+    size_type offset() const
+    {
+        return base_type::d_impl->d_read - base_type::d_impl->d_write - 1;
+    }
+
+    size_type position() const
+    {
+        return base_type::d_impl->d_write;
+    }
+
+    void position(size_type pos) const
+    {
+        base_type::d_impl->d_write = pos;
+    }
+};
+
+template<typename T>
+writer<T>::writer(size_type n)
+    : base<writer,T>{std::make_shared<impl>(n, sizeof(T))}
+{ }
+
+template<typename T>
+reader<T> writer<T>::make_reader()
+{
+    return std::move(reader<T>{base<writer,T>::d_impl});
+}
+
+} // namespace buffer
+} // namespace comm
+
+#endif /* COMM_BUFFER_HPP_ */
