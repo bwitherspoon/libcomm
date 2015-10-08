@@ -17,6 +17,13 @@ BOOST_AUTO_TEST_CASE(buffer_test)
   auto wr = comm::buffer::writer<float>(sz);
   auto rd = wr.make_reader();
 
+  // Test equality operators
+  {
+    comm::buffer::reader<float> & rd_ = rd;
+    BOOST_REQUIRE(rd == rd_);
+  }
+  BOOST_REQUIRE(wr == rd);
+
   // Test construction invariants
   BOOST_REQUIRE_EQUAL(wr.size(), sz);
   BOOST_REQUIRE_EQUAL(rd.size(), 0);

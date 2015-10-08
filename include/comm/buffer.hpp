@@ -36,19 +36,19 @@ private:
 };
 
 //! A base class for a buffer
-template<template<typename> class U, typename T>
+template<template<typename> class T, typename U>
 class base
 {
 public:
-    using value_type      = T;
+    using value_type      = U;
     using size_type       = std::size_t;
     using difference_type = std::ptrdiff_t;
-    using reference       = T &;
-    using const_reference = const T &;
-    using pointer         = T *;
-    using const_pointer   = const T *;
-    using iterator        = T *;
-    using const_iterator  = const T *;
+    using reference       = U &;
+    using const_reference = const U &;
+    using pointer         = U *;
+    using const_pointer   = const U *;
+    using iterator        = U *;
+    using const_iterator  = const U *;
 
     static_assert(std::numeric_limits<size_type>::is_modulo,
                   "buffer::base: modulo arithmetic not supported");
@@ -94,6 +94,11 @@ protected:
     base & operator=(base && other) = delete;
 
     std::shared_ptr<impl> d_impl;
+
+private:
+    template<template<typename> class V, typename X,
+             template<typename> class Y, typename Z>
+    friend bool operator==(const base<V,X> & lhs, const base<Y,Z> & rhs);
 };
 
 template<template<typename> class T, typename U>
@@ -157,6 +162,22 @@ void base<T,U>::consume(size_type n)
         pos -= overflow;
 
     static_cast<T<U>*>(this)->position(pos);
+}
+
+//! Returns true of two buffers share the same data
+template<template<typename> class T, typename U,
+         template<typename> class V, typename X>
+bool operator==(const base<T,U> & lhs, const base<V,X> & rhs)
+{
+  return lhs.d_impl == rhs.d_impl;
+}
+
+//! Returns false of two buffers share the same data
+template<template<typename> class T, typename U,
+         template<typename> class V, typename X>
+bool operator!=(const base<T,U> & lhs, const base<V,X> & rhs)
+{
+  return !(lhs == rhs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
