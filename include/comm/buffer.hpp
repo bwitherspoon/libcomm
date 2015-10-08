@@ -18,9 +18,6 @@ namespace buffer
 //! A class for buffer shared data
 class impl
 {
-    template<typename> friend class writer;
-    template<typename> friend class reader;
-    template<template<typename> class, typename> friend class base;
 public:
     explicit impl(size_t num_items, size_t item_size);
     ~impl();
@@ -29,6 +26,9 @@ public:
     impl & operator=(const impl &) = delete;
     impl & operator=(impl &&) = delete;
 private:
+    template<typename> friend class writer;
+    template<typename> friend class reader;
+    template<template<typename> class, typename> friend class base;
     void * d_base;
     size_t d_size;
     std::atomic<size_t> d_read;
@@ -51,7 +51,7 @@ public:
     using const_iterator  = const T *;
 
     static_assert(std::numeric_limits<size_type>::is_modulo,
-                  "buffer::base: size_type must support modulo arithmetic");
+                  "buffer::base: modulo arithmetic not supported");
 
     //! Returns an iterator to the beginning of the buffer
     iterator begin();
@@ -165,8 +165,6 @@ void base<T,U>::consume(size_type n)
 template<typename T>
 class reader : public base<reader,T>
 {
-    template<typename> friend class writer;
-    template<template<typename> class, typename> friend class base;
 public:
     using value_type      = T;
     using size_type       = typename base<reader,T>::size_type;
@@ -180,6 +178,10 @@ public:
 
 private:
     using base_type = base<reader,value_type>;
+
+    template<typename> friend class writer;
+
+    template<template<typename> class, typename> friend class base;
 
     explicit reader(std::shared_ptr<impl> ptr);
 
@@ -210,7 +212,6 @@ reader<T>::reader(std::shared_ptr<impl> ptr)
 template<typename T>
 class writer : public base<writer,T>
 {
-    template<template<typename> class, typename> friend class base;
 public:
     using value_type      = T;
     using size_type       = typename base<reader,T>::size_type;
@@ -228,6 +229,8 @@ public:
 
 private:
     using base_type = base<writer,value_type>;
+
+    template<template<typename> class, typename> friend class base;
 
     size_type offset() const
     {
