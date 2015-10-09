@@ -39,3 +39,7 @@ add_executable(signal_test signal_test.cpp)
 target_link_libraries(signal_test ${Boost_LIBRARIES})
 add_test(signal_test signal_test)
 
+add_executable(block_test block_test.cpp)
+target_link_libraries(block_test ${Boost_LIBRARIES})
+add_test(block_test block_test)
+
