@@ -5,8 +5,8 @@
 #ifndef COMM_MUTATOR_HPP_
 #define COMM_MUTATOR_HPP_
 
+#include <cstdddef> // for std::size_t
 #include <vector>
-#include <cstdint>
 
 #include "comm/block.hpp"
 
@@ -33,6 +33,7 @@ public:
 
   bool ready() final;
 
+  //! Connect the output of this block to the input of another
   block & operator>>(block & other) final;
 
   //! Execute a mutator given an input and output
@@ -53,8 +54,8 @@ protected:
 private:
   const float d_ratio;
   const std::size_t d_thresh;
-  std::vector<comm::buffer::reader<T>> d_reader;
-  std::vector<comm::buffer::writer<U>> d_writer;
+  std::vector<comm::buffer::reader<T>> d_readers;
+  std::vector<comm::buffer::writer<U>> d_writers;
   std::vector<comm::signal<T>> d_input;
   std::vector<comm::signal<U>> d_output;
 };
@@ -65,34 +66,33 @@ mutator<T,U>::mutator()
 { }
 
 template<typename T, typename U>
-mutator<T,U>::mutator(float ratio, std::size_t threshold)
-  : d_ratio(ratio), d_thresh(threshold)
+mutator<T,U>::mutator(float ratio, std::size_t thresh)
+  : d_ratio(ratio), d_thresh(thresh)
 { }
 
 template<typename T, typename U>
 void mutator<T,U>::operator()()
 {
-  if (!ready())
-    return;
-
-  for (auto buf = d_reader.begin(), sig = d_input.begin();
-       buf < d_reader.end() && sig < d_input.end();
-       ++buf, ++sig)
+  for (auto buf = d_readers.begin(), sig = d_input.begin();
+       buf < d_readers.end() && sig < d_input.end(); ++buf, ++sig)
     *sig = *buf;
 
   auto consumed = operator()(d_input, d_output);
   auto produced = d_ratio * consumed;
 
-  for (auto & rd : d_reader)
-    rd.consume(consumed);
+  for (auto & reader : d_readers)
+    reader.consume(consumed);
 
-  for (auto & wr : d_writer)
-    wr.consume(produced);
+  for (auto & writer : d_writers)
+    writer.consume(produced);
 }
 
 template<typename T, typename U>
 bool mutator<T,U>::ready()
 {
+  if (d_readers.empty() || d_writers.empty())
+    return false;
+
   const bool enough_input = d_input[0].size() >= d_thresh;
   const bool enough_output = d_output[0].size() >= d_ratio * d_input[0].size();
 

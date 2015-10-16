@@ -19,8 +19,6 @@ public:
   virtual void operator()() = 0;
   //! Returns true of the block is ready to execute
   virtual bool ready() = 0;
-  //! Connect the output of this block to the input of another
-  virtual block & operator>>(block & other) = 0;
 };
 
 } /* namespace comm */
