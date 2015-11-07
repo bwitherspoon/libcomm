@@ -1,5 +1,5 @@
-Comm
-====
+libcomm
+=======
 
 This is a library for communication systems.
 
