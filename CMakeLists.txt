@@ -19,12 +19,14 @@ include(GNUInstallDirs)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
-add_compile_options(-march=native -std=gnu++11 -Werror -Wall -pipe)
+add_compile_options(-march=native -std=gnu++14 -Werror -Wall -pipe)
 
-include_directories(include)
+include_directories(include ${LIBUSB_INCLUDE_DIRS})
 
 find_package(Doxygen)
+find_package(Threads REQUIRED)
 find_package(ZeroMQ REQUIRED)
+find_package(libusb-1.0 REQUIRED)
 
 add_library(
     comm
@@ -33,8 +35,14 @@ add_library(
     src/endian.cpp
     src/message.cpp
     src/socket.cpp
-    src/buffer.cpp)
-target_link_libraries(comm ${ZeroMQ_LIBRARIES})
+    src/buffer.cpp
+    src/usb.cpp)
+target_link_libraries(
+    comm
+    ${ZeroMQ_LIBRARIES}
+    ${LIBUSB_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+)
 
 install(TARGETS comm DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
