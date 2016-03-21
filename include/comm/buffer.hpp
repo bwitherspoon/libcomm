@@ -85,13 +85,13 @@ protected:
 
     explicit base(std::shared_ptr<impl> ptr);
 
-    base(const base &) = default;
+    base(const base &) = delete;
 
     base(base &&) = default;
 
     base & operator=(const base &) = delete;
 
-    base & operator=(base && other) = delete;
+    base & operator=(base &&) = default;
 
     std::shared_ptr<impl> d_impl;
 
@@ -197,6 +197,14 @@ public:
     using iterator        = T *;
     using const_iterator  = const T *;
 
+    reader(const reader &) = delete;
+
+    reader(reader &&) = default;
+
+    reader & operator=(const reader &) = delete;
+
+    reader & operator=(reader &&) = default;
+
 private:
     using base_type = base<reader,value_type>;
 
@@ -245,6 +253,14 @@ public:
     using const_iterator  = const T *;
 
     explicit writer(size_type n);
+
+    writer(const writer &) = delete;
+
+    writer(writer &&) = default;
+
+    writer & operator=(const writer &) = delete;
+
+    writer & operator=(writer &&) = default;
 
     reader<value_type> make_reader();
 
