@@ -66,8 +66,8 @@ public:
   //! An exception thrown on deserialization errors
   struct deserialize_error : public std::runtime_error
   {
-    explicit deserialize_error(const std::string& loc, const std::string& msg);
-    explicit deserialize_error(const char* loc, const char* msg);
+    deserialize_error(const std::string& loc, const std::string& msg);
+    deserialize_error(const char* loc, const char* msg);
   };
 
   //! Messages cannot be copy constructed
