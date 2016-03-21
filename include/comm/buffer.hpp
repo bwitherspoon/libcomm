@@ -272,6 +272,7 @@ public:
 
     writer & operator=(writer &&) = default;
 
+    template<typename U = T>
     reader<value_type> make_reader();
 
 private:
@@ -301,9 +302,10 @@ writer<T>::writer(size_type n)
 { }
 
 template<typename T>
+template<typename U>
 reader<T> writer<T>::make_reader()
 {
-    return std::move(reader<T>{detail::base<writer,T>::d_impl});
+    return std::move(reader<U>{detail::base<writer,T>::d_impl});
 }
 
 } // namespace buffer
