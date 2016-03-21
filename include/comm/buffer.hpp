@@ -83,7 +83,7 @@ public:
     size_type size() const;
 
     //! Returns the maximum size of the buffer
-    size_type max_size() const { return d_impl->d_size / sizeof(U); };
+    size_type max_size() const { return d_impl->d_size / sizeof(U) - 1; };
 
     //! Consume items from the buffer
     void consume(size_type n);
