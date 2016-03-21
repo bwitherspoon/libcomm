@@ -15,6 +15,11 @@ namespace comm
 namespace buffer
 {
 
+template<typename> class writer;
+template<typename> class reader;
+
+namespace detail
+{
 //! A class for buffer shared data
 class impl
 {
@@ -26,8 +31,8 @@ public:
     impl & operator=(const impl &) = delete;
     impl & operator=(impl &&) = delete;
 private:
-    template<typename> friend class writer;
-    template<typename> friend class reader;
+    template<typename> friend class ::comm::buffer::writer;
+    template<typename> friend class ::comm::buffer::reader;
     template<template<typename> class, typename> friend class base;
     void * d_base;
     size_t d_size;
@@ -180,16 +185,18 @@ bool operator!=(const base<T,U> & lhs, const base<V,X> & rhs)
   return !(lhs == rhs);
 }
 
+} // namespace detail
+
 ////////////////////////////////////////////////////////////////////////////////
 
 //! A class to read from a buffer
 template<typename T>
-class reader : public base<reader,T>
+class reader : public detail::base<reader,T>
 {
 public:
     using value_type      = T;
-    using size_type       = typename base<reader,T>::size_type;
-    using difference_type = typename base<reader,T>::difference_type;
+    using size_type       = typename detail::base<reader,T>::size_type;
+    using difference_type = typename detail::base<reader,T>::difference_type;
     using reference       = T &;
     using const_reference = const T &;
     using pointer         = T *;
@@ -206,13 +213,13 @@ public:
     reader & operator=(reader &&) = default;
 
 private:
-    using base_type = base<reader,value_type>;
+    using base_type = detail::base<reader,value_type>;
 
     template<typename> friend class writer;
 
-    template<template<typename> class, typename> friend class base;
+    template<template<typename> class, typename> friend class detail::base;
 
-    explicit reader(std::shared_ptr<impl> ptr);
+    explicit reader(std::shared_ptr<detail::impl> ptr);
 
     size_type offset() const
     {
@@ -231,20 +238,20 @@ private:
 };
 
 template<typename T>
-reader<T>::reader(std::shared_ptr<impl> ptr)
-    : base<reader,T>(ptr)
+reader<T>::reader(std::shared_ptr<detail::impl> ptr)
+    : detail::base<reader,T>(ptr)
 { }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 //! A class to write to a buffer
 template<typename T>
-class writer : public base<writer,T>
+class writer : public detail::base<writer,T>
 {
 public:
     using value_type      = T;
-    using size_type       = typename base<reader,T>::size_type;
-    using difference_type = typename base<reader,T>::difference_type;
+    using size_type       = typename detail::base<reader,T>::size_type;
+    using difference_type = typename detail::base<reader,T>::difference_type;
     using reference       = T &;
     using const_reference = const T &;
     using pointer         = T *;
@@ -265,9 +272,9 @@ public:
     reader<value_type> make_reader();
 
 private:
-    using base_type = base<writer,value_type>;
+    using base_type = detail::base<writer,value_type>;
 
-    template<template<typename> class, typename> friend class base;
+    template<template<typename> class, typename> friend class detail::base;
 
     size_type offset() const
     {
@@ -287,13 +294,13 @@ private:
 
 template<typename T>
 writer<T>::writer(size_type n)
-    : base<writer,T>{std::make_shared<impl>(n, sizeof(T))}
+    : detail::base<writer,T>{std::make_shared<detail::impl>(n, sizeof(T))}
 { }
 
 template<typename T>
 reader<T> writer<T>::make_reader()
 {
-    return std::move(reader<T>{base<writer,T>::d_impl});
+    return std::move(reader<T>{detail::base<writer,T>::d_impl});
 }
 
 } // namespace buffer

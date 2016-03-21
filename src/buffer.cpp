@@ -62,6 +62,8 @@ void deallocate_mirrored_pages(void * p, std::size_t n)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace detail
+{
 impl::impl(size_t num_items, size_t item_size)
 {
     using comm::math::gcd;
@@ -86,5 +88,6 @@ impl::~impl()
     deallocate_mirrored_pages(d_base, d_size);
 }
 
+} // namespace detail
 } // namespace buffer
 } // namespace comm
