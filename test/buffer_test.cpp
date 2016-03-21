@@ -11,6 +11,16 @@
 
 #include "comm/buffer.hpp"
 
+BOOST_AUTO_TEST_CASE(default_buffer_test)
+{
+    auto wr = comm::buffer::writer<float>();
+    BOOST_REQUIRE_NE(wr.size(), 0);
+    BOOST_REQUIRE_NE(wr.max_size(), 0);
+
+    auto rd = wr.make_reader();
+    BOOST_REQUIRE_EQUAL(rd.size(), 0);
+}
+
 BOOST_AUTO_TEST_CASE(buffer_test)
 {
   const size_t sz = 2047;

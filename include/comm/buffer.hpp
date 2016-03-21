@@ -83,7 +83,7 @@ public:
     size_type size() const;
 
     //! Returns the maximum size of the buffer
-    size_type max_size() const { return d_impl->d_size / sizeof(U) - 1; };
+    size_type max_size() const;
 
     //! Consume items from the buffer
     void consume(size_type n);
@@ -157,6 +157,12 @@ typename base<T,U>::size_type base<T,U>::size() const
         sz -= underflow;
 
     return sz;
+}
+
+template<template<typename> class T, typename U>
+typename base<T,U>::size_type base<T,U>::max_size() const
+{
+    return d_impl->d_size / sizeof(U) - 1;
 }
 
 template<template<typename> class T, typename U>
@@ -262,6 +268,8 @@ public:
     using iterator        = T *;
     using const_iterator  = const T *;
 
+    writer();
+
     explicit writer(size_type n);
 
     writer(const writer &) = delete;
@@ -295,6 +303,11 @@ private:
         base_type::d_impl->d_write = pos;
     }
 };
+
+template<typename T>
+writer<T>::writer()
+    : detail::base<writer,T>{std::make_shared<detail::impl>(0, sizeof(T))}
+{ }
 
 template<typename T>
 writer<T>::writer(size_type n)
