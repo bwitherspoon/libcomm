@@ -9,6 +9,8 @@
 #include <cstddef> // for std::size_t
 #include <limits>  // for std::numeric_limits
 #include <memory>  // for std::shared_ptr
+#include <mutex>
+#include <condition_variable>
 
 namespace comm
 {
@@ -37,7 +39,11 @@ private:
     void * d_base;
     size_t d_size;
     std::atomic<size_t> d_read;
+    std::mutex d_read_mutex;
+    std::condition_variable d_read_cond;
     std::atomic<size_t> d_write;
+    std::mutex d_write_mutex;
+    std::condition_variable d_write_cond;
 };
 
 //! A base class for a buffer
@@ -87,6 +93,9 @@ public:
 
     //! Consume items from the buffer
     void consume(size_type n);
+
+    //! Wait for a number of items to be in the buffer
+    void wait(size_type n);
 
 protected:
     explicit base(size_type n);
@@ -175,7 +184,7 @@ void base<T,U>::consume(size_type n)
     if (pos >= overflow)
         pos -= overflow;
 
-    static_cast<T<U>*>(this)->position(pos);
+    static_cast<T<U>*>(this)->update(pos);
 }
 
 //! Returns true of two buffers share the same data
@@ -221,6 +230,8 @@ public:
 
     reader & operator=(reader &&) = default;
 
+    void wait(size_type n);
+
 private:
     using base_type = detail::base<reader,value_type>;
 
@@ -240,9 +251,13 @@ private:
         return base_type::d_impl->d_read;
     }
 
-    void position(size_type pos)
+    void update(size_type pos)
     {
-        base_type::d_impl->d_read = pos;
+        {
+            std::lock_guard<std::mutex> lock(base_type::d_impl->d_read_mutex);
+            base_type::d_impl->d_read = pos;
+        }
+        base_type::d_impl->d_read_cond.notify_all();
     }
 };
 
@@ -250,6 +265,13 @@ template<typename T>
 reader<T>::reader(std::shared_ptr<detail::impl> ptr)
     : detail::base<reader,T>(ptr)
 { }
+
+template<typename T>
+void reader<T>::wait(size_type n)
+{
+    std::unique_lock<std::mutex> lock(base_type::d_impl->d_read_mutex);
+    base_type::d_impl->d_read_cond.wait(lock, [&]{ return this->size() >= n; });
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -280,6 +302,8 @@ public:
 
     writer & operator=(writer &&) = default;
 
+    void wait(size_type n);
+
     template<typename U = T>
     reader<value_type> make_reader();
 
@@ -298,9 +322,13 @@ private:
         return base_type::d_impl->d_write;
     }
 
-    void position(size_type pos) const
+    void update(size_type pos) const
     {
-        base_type::d_impl->d_write = pos;
+        {
+            std::lock_guard<std::mutex> lock(base_type::d_impl->d_write_mutex);
+            base_type::d_impl->d_write = pos;;
+        }
+        base_type::d_impl->d_write_cond.notify_all();
     }
 };
 
@@ -313,6 +341,13 @@ template<typename T>
 writer<T>::writer(size_type n)
     : detail::base<writer,T>{std::make_shared<detail::impl>(n, sizeof(T))}
 { }
+
+template<typename T>
+void writer<T>::wait(size_type n)
+{
+    std::unique_lock<std::mutex> lock(base_type::d_impl->d_write_mutex);
+    base_type::d_impl->d_write_cond.wait(lock, [&]{ return this->size() >= n; });
+}
 
 template<typename T>
 template<typename U>
