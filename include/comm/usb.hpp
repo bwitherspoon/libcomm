@@ -21,10 +21,12 @@ enum class endpoint : unsigned char
     EP2_OUT = 0x02,
     EP3_OUT = 0x03,
     EP4_OUT = 0x04,
+    EP6_OUT = 0x06,
     EP1_IN  = 0x81,
     EP2_IN  = 0x82,
     EP3_IN  = 0x83,
-    EP4_IN  = 0x84
+    EP4_IN  = 0x84,
+    EP6_IN  = 0x86
 };
 
 class source final
