@@ -94,9 +94,6 @@ public:
     //! Consume items from the buffer
     void consume(size_type n);
 
-    //! Wait for a number of items to be in the buffer
-    void wait(size_type n);
-
 protected:
     explicit base(size_type n);
 
@@ -230,6 +227,7 @@ public:
 
     reader & operator=(reader &&) = default;
 
+    //! Wait for a number of items to be in the buffer
     void wait(size_type n);
 
 private:
@@ -269,8 +267,8 @@ reader<T>::reader(std::shared_ptr<detail::impl> ptr)
 template<typename T>
 void reader<T>::wait(size_type n)
 {
-    std::unique_lock<std::mutex> lock(base_type::d_impl->d_read_mutex);
-    base_type::d_impl->d_read_cond.wait(lock, [&]{ return this->size() >= n; });
+    std::unique_lock<std::mutex> lock(base_type::d_impl->d_write_mutex);
+    base_type::d_impl->d_write_cond.wait(lock, [&]{ return this->size() >= n; });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -302,6 +300,7 @@ public:
 
     writer & operator=(writer &&) = default;
 
+    //! Wait for a number of items to be in the buffer
     void wait(size_type n);
 
     template<typename U = T>
@@ -345,8 +344,8 @@ writer<T>::writer(size_type n)
 template<typename T>
 void writer<T>::wait(size_type n)
 {
-    std::unique_lock<std::mutex> lock(base_type::d_impl->d_write_mutex);
-    base_type::d_impl->d_write_cond.wait(lock, [&]{ return this->size() >= n; });
+    std::unique_lock<std::mutex> lock(base_type::d_impl->d_read_mutex);
+    base_type::d_impl->d_read_cond.wait(lock, [&]{ return this->size() >= n; });
 }
 
 template<typename T>
