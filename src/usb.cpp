@@ -24,9 +24,12 @@ source::source(uint16_t vid, uint16_t pid, endpoint ep)
     if (d_handle == NULL)
         throw::std::runtime_error("Failed to open device");
 
-    d_max_packet_size = libusb_get_max_packet_size(libusb_get_device(d_handle), d_endpoint);
+    const unsigned int max_packet_size = libusb_get_max_packet_size(libusb_get_device(d_handle), d_endpoint);
 
-    d_buffer = comm::buffer::writer<unsigned char>(16 * d_max_packet_size);
+    // Lower 11 bits are the packet size (12-11 bits are packets per microframe_
+    d_max_packet_size = max_packet_size & 0x7FF;
+
+    d_buffer = comm::buffer::writer<unsigned char>(128 * d_max_packet_size);
 }
 
 source::~source()
@@ -38,13 +41,14 @@ source::~source()
 
 void source::operator()()
 {
+    const int length = 32 * d_max_packet_size;
+
     int error;
     int transferred;
 
-    d_buffer.wait(4 * d_max_packet_size);
+    d_buffer.wait(length);
 
-    error = libusb_bulk_transfer(d_handle, d_endpoint, d_buffer.begin(),
-                                 4 * d_max_packet_size, &transferred, 0);
+    error = libusb_bulk_transfer(d_handle, d_endpoint, d_buffer.begin(), length, &transferred, 0);
 
     switch (error)
     {
