@@ -15,14 +15,17 @@
 
 #include <comm/usb.hpp>
 #include <comm/buffer.hpp>
+#include <comm/util/priority.hpp>
 
 int main (int argc, char *argv[])
 {
     const uint16_t vid = 0x04b4;    // Netchip Technology, Inc
     const uint16_t pid = 0x00f1;    // Linux-USB "Gadget Zero"
-    const std::string name = "usb";
+    const std::string name = "/tmp/usb_to_pipe";
     const int thresh = 1;
     std::atomic<size_t> sum(0);
+
+    comm::util::set_realtime_priority();
 
     comm::usb::source src(vid, pid, comm::usb::endpoint::EP6_IN);
 
@@ -32,11 +35,16 @@ int main (int argc, char *argv[])
     std::thread throughput([&]{
         while (true)
         {
+            comm::util::set_normal_priority();
+
             sum = 0;
 
             auto start = std::chrono::steady_clock::now();
+
             std::this_thread::sleep_for(std::chrono::seconds(1));
+
             auto end = std::chrono::steady_clock::now();
+
             std::chrono::duration<double> diff = end - start;
 
             std::cout << "Effective rate: " << sum / 2.0 / diff.count() / 1e6 << " Msps" << std::endl;

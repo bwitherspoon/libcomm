@@ -28,6 +28,11 @@ find_package(Threads REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(libusb-1.0 REQUIRED)
 
+if (NOT DEFINED CMAKE_USE_PTHREADS_INIT)
+    message(FATAL_ERROR, "This platform does not support pthreads")
+endif()
+
+
 add_library(
     comm
     SHARED
@@ -36,7 +41,8 @@ add_library(
     src/message.cpp
     src/socket.cpp
     src/buffer.cpp
-    src/usb.cpp)
+    src/usb.cpp
+    src/util/priority.cpp)
 target_link_libraries(
     comm
     ${ZeroMQ_LIBRARIES}
