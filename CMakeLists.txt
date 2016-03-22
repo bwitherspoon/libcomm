@@ -21,7 +21,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 add_compile_options(-march=native -std=gnu++14 -Werror -Wall -pipe)
 
-include_directories(include ${LIBUSB_INCLUDE_DIRS})
+include_directories(include ${LIBUSB_INCLUDE_DIRS} ${ZeroMQ_INCLUDE_DIRS})
 
 find_package(Doxygen)
 find_package(Threads REQUIRED)
@@ -50,6 +50,8 @@ install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 if(DOXYGEN_FOUND)
     add_subdirectory(doc)
 endif()
+
+add_subdirectory(app)
 
 enable_testing()
 add_subdirectory(test)
