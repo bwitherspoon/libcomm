@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 #include <cstdint>
 #include <string>
@@ -33,6 +34,8 @@ int main (int argc, char *argv[])
     usb.detach();
 
     std::thread throughput([&]{
+        std::cout << std::fixed << std::setprecision(2);
+
         while (true)
         {
             comm::util::set_normal_priority();
