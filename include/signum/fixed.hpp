@@ -2,6 +2,9 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
+#ifndef SIGNUM_FIXED_HPP_
+#define SIGNUM_FIXED_HPP_
+
 #include <cmath>
 #include <limits>
 #include <type_traits>
@@ -51,3 +54,5 @@ Fixed floating_to_fixed(Float floating)
   }
 }
 } /* namespace signum */
+
+#endif /* SIGNUM_FIXED_HPP_ */
