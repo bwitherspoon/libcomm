@@ -29,7 +29,7 @@ source::source(uint16_t vid, uint16_t pid, endpoint ep)
     // Lower 11 bits are the packet size (12-11 bits are packets per microframe_
     d_max_packet_size = max_packet_size & 0x7FF;
 
-    d_buffer = signum::buffer::writer<unsigned char>(128 * d_max_packet_size);
+    d_buffer = signum::buffer::writer<unsigned char>(256 * d_max_packet_size);
 }
 
 source::~source()
@@ -41,7 +41,7 @@ source::~source()
 
 void source::operator()()
 {
-    const int length = 32 * d_max_packet_size;
+    const int length = 64 * d_max_packet_size;
 
     int error;
     int transferred;
