@@ -14,9 +14,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <comm/usb.hpp>
-#include <comm/buffer.hpp>
-#include <comm/util/priority.hpp>
+#include <signum/usb.hpp>
+#include <signum/buffer.hpp>
+#include <signum/util/priority.hpp>
 
 int main (int argc, char *argv[])
 {
@@ -26,9 +26,9 @@ int main (int argc, char *argv[])
     const int thresh = 1;
     std::atomic<size_t> sum(0);
 
-    comm::util::set_realtime_priority();
+    signum::util::set_realtime_priority();
 
-    comm::usb::source src(vid, pid, comm::usb::endpoint::EP6_IN);
+    signum::usb::source src(vid, pid, signum::usb::endpoint::EP6_IN);
 
     std::thread usb([&]{ while(true) src(); });
     usb.detach();
@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
 
         while (true)
         {
-            comm::util::set_normal_priority();
+            signum::util::set_normal_priority();
 
             sum = 0;
 

@@ -2,8 +2,8 @@
  * Copyright 2016 C. Brett Witherspoon
  */
 
-#ifndef COMM_USB_HPP_
-#define COMM_USB_HPP_
+#ifndef SIGNUM_USB_HPP_
+#define SIGNUM_USB_HPP_
 
 #include <cstdint>
 
@@ -11,7 +11,7 @@
 
 struct libusb_device_handle;
 
-namespace comm
+namespace signum
 {
 namespace usb
 {
@@ -37,7 +37,7 @@ public:
     ~source();
 
     template<typename T>
-    comm::buffer::reader<T> make_reader() { return d_buffer.make_reader<T>(); }
+    signum::buffer::reader<T> make_reader() { return d_buffer.make_reader<T>(); }
 
     void operator()();
 
@@ -46,12 +46,12 @@ private:
 
     unsigned int d_max_packet_size;
 
-    comm::buffer::writer<unsigned char> d_buffer;
+    signum::buffer::writer<unsigned char> d_buffer;
 
     libusb_device_handle *d_handle;
 };
 
 } // namespace usb
-} // namespace comm
+} // namespace signum
 
-#endif /* COMM_USB_HPP_ */
+#endif /* SIGNUM_USB_HPP_ */

@@ -2,8 +2,8 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef COMM_BUFFER_HPP_
-#define COMM_BUFFER_HPP_
+#ifndef SIGNUM_BUFFER_HPP_
+#define SIGNUM_BUFFER_HPP_
 
 #include <atomic>  // for std::atomic
 #include <cstddef> // for std::size_t
@@ -12,7 +12,7 @@
 #include <mutex>
 #include <condition_variable>
 
-namespace comm
+namespace signum
 {
 namespace buffer
 {
@@ -33,8 +33,8 @@ public:
     impl & operator=(const impl &) = delete;
     impl & operator=(impl &&) = delete;
 private:
-    template<typename> friend class ::comm::buffer::writer;
-    template<typename> friend class ::comm::buffer::reader;
+    template<typename> friend class ::signum::buffer::writer;
+    template<typename> friend class ::signum::buffer::reader;
     template<template<typename> class, typename> friend class base;
     void * d_base;
     size_t d_size;
@@ -356,6 +356,6 @@ reader<T> writer<T>::make_reader()
 }
 
 } // namespace buffer
-} // namespace comm
+} // namespace signum
 
-#endif /* COMM_BUFFER_HPP_ */
+#endif /* SIGNUM_BUFFER_HPP_ */

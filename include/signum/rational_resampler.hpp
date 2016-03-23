@@ -2,14 +2,14 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef RATIONAL_RESAMPLER_HPP_
-#define RATIONAL_RESAMPLER_HPP_
+#ifndef SIGNUM_RATIONAL_RESAMPLER_HPP_
+#define SIGNUM_RATIONAL_RESAMPLER_HPP_
 
 #include <array>
 #include <algorithm>
 #include <complex>
 
-namespace comm {
+namespace signum {
 //! A rational resampler
 template<unsigned int I,
          unsigned int D,
@@ -125,6 +125,6 @@ make_rational_resampler(const std::array<T, M> &prototype)
   return rational_resampler<I, D, M, T, U>(prototype);
 }
 
-} /* namespace comm */
+} /* namespace signum */
 
-#endif /* RATIONAL_RESAMPLER_HPP_ */
+#endif /* SIGNUM_RATIONAL_RESAMPLER_HPP_ */

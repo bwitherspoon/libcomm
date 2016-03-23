@@ -1,7 +1,7 @@
-libcomm
+Signum
 =======
 
-This is a library for communication systems.
+This is a library for signals and communication systems.
 
 Dependencies
 ------------

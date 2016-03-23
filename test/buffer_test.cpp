@@ -2,18 +2,18 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#define BOOST_TEST_MODULE comm_tests
+#define BOOST_TEST_MODULE signum_tests
 #include <boost/test/unit_test.hpp>
 
 #include <algorithm>
 #include <functional>
 #include <random>
 
-#include "comm/buffer.hpp"
+#include "signum/buffer.hpp"
 
 BOOST_AUTO_TEST_CASE(default_buffer_test)
 {
-    auto wr = comm::buffer::writer<float>();
+    auto wr = signum::buffer::writer<float>();
     BOOST_REQUIRE_NE(wr.size(), 0);
     BOOST_REQUIRE_NE(wr.max_size(), 0);
 
@@ -24,12 +24,12 @@ BOOST_AUTO_TEST_CASE(default_buffer_test)
 BOOST_AUTO_TEST_CASE(buffer_test)
 {
   const size_t sz = 2047;
-  auto wr = comm::buffer::writer<float>(sz);
+  auto wr = signum::buffer::writer<float>(sz);
   auto rd = wr.make_reader();
 
   // Test equality operators
   {
-    comm::buffer::reader<float> & rd_ = rd;
+    signum::buffer::reader<float> & rd_ = rd;
     BOOST_REQUIRE(rd == rd_);
   }
   BOOST_REQUIRE(wr == rd);

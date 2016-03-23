@@ -2,17 +2,17 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#define BOOST_TEST_MODULE comm_test
+#define BOOST_TEST_MODULE signum_test
 #include <boost/test/unit_test.hpp>
 
-#include "comm/socket.hpp"
-#include "comm/message.hpp"
+#include "signum/socket.hpp"
+#include "signum/message.hpp"
 
 BOOST_AUTO_TEST_CASE(socket_test)
 {
-  using comm::context;
-  using comm::socket;
-  using comm::message;
+  using signum::context;
+  using signum::socket;
+  using signum::message;
 
   context ctx;
   message msg;

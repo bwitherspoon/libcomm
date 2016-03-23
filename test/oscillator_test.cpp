@@ -2,13 +2,13 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#define BOOST_TEST_MODULE comm_tests
+#define BOOST_TEST_MODULE signum_tests
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
 #include <cmath>
 
-#include "comm/oscillator.hpp"
+#include "signum/oscillator.hpp"
 
 BOOST_AUTO_TEST_CASE(double_oscillator_test)
 {
@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(double_oscillator_test)
 
   std::array<double, 50> output;
 
-  comm::oscillator<double> osc(freq, rate);
+  signum::oscillator<double> osc(freq, rate);
 
   osc(output);
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(complex_oscillator_test)
 
   std::array<std::complex<double>, 650> output;
 
-  comm::oscillator<std::complex<double>> osc(freq, rate);
+  signum::oscillator<std::complex<double>> osc(freq, rate);
 
   osc(output);
 

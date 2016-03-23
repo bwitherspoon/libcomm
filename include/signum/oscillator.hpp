@@ -2,12 +2,12 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef OSCILLATOR_HPP_
-#define OSCILLATOR_HPP_
+#ifndef SIGNUM_OSCILLATOR_HPP_
+#define SIGNUM_OSCILLATOR_HPP_
 
 #include <complex>
 
-namespace comm
+namespace signum
 {
 //! An oscillator with real output
 template<typename T>
@@ -127,6 +127,6 @@ void oscillator<std::complex<T>>::operator()(U& output)
   }
 }
 
-} /* namespace comm */
+} /* namespace signum */
 
-#endif /* OSCILLATOR_HPP_ */
+#endif /* SIGNUM_OSCILLATOR_HPP_ */

@@ -2,8 +2,8 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef MESSAGE_HPP_
-#define MESSAGE_HPP_
+#ifndef SIGNUM_MESSAGE_HPP_
+#define SIGNUM_MESSAGE_HPP_
 
 #include <algorithm>
 #include <cstdint>
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace comm
+namespace signum
 {
 /**
  * \brief A class for serializing and deserializing messages
@@ -280,6 +280,6 @@ constexpr bool operator!=(uint8_t lhs, message::formats rhs)
   return rhs != lhs;
 }
 
-} /* namespace comm */
+} /* namespace signum */
 
-#endif /* MESSAGE_HPP_ */
+#endif /* SIGNUM_MESSAGE_HPP_ */

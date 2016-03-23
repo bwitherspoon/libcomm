@@ -5,10 +5,10 @@
 #include <limits>
 #include <type_traits>
 
-#include "comm/util/endian.hpp"
-#include "comm/message.hpp"
+#include "signum/util/endian.hpp"
+#include "signum/message.hpp"
 
-namespace comm {
+namespace signum {
 
 message::message() :
     m_data(), m_pos(0)
@@ -432,4 +432,4 @@ message::deserialize_error::deserialize_error(
         : deserialize_error(std::string(loc), std::string(msg))
 { }
 
-} /* namespace comm */
+} /* namespace signum */

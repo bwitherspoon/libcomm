@@ -6,9 +6,9 @@
 
 #include <libusb.h>
 
-#include "comm/usb.hpp"
+#include "signum/usb.hpp"
 
-namespace comm
+namespace signum
 {
 namespace usb
 {
@@ -29,7 +29,7 @@ source::source(uint16_t vid, uint16_t pid, endpoint ep)
     // Lower 11 bits are the packet size (12-11 bits are packets per microframe_
     d_max_packet_size = max_packet_size & 0x7FF;
 
-    d_buffer = comm::buffer::writer<unsigned char>(128 * d_max_packet_size);
+    d_buffer = signum::buffer::writer<unsigned char>(128 * d_max_packet_size);
 }
 
 source::~source()
@@ -69,4 +69,4 @@ void source::operator()()
 }
 
 } // namespace usb
-} // namespace comm
+} // namespace signum

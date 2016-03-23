@@ -6,6 +6,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable(usb_to_pipe usb_to_pipe.cpp)
 
-target_link_libraries(usb_to_pipe comm ${Boost_LIBRARIES})
+target_link_libraries(usb_to_pipe signum ${Boost_LIBRARIES})
 
 install(TARGETS usb_to_pipe DESTINATION ${CMAKE_INSTALL_BINDIR})

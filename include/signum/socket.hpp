@@ -2,14 +2,14 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef SOCKET_HPP_
-#define SOCKET_HPP_
+#ifndef SIGNUM_SOCKET_HPP_
+#define SIGNUM_SOCKET_HPP_
 
 #include <memory>
 #include <stdexcept>
 #include <string>
 
-namespace comm
+namespace signum
 {
 
 class message;
@@ -118,6 +118,6 @@ private:
   void* m_context;
 };
 
-} /* namespace comm */
+} /* namespace signum */
 
-#endif /* SOCKET_HPP_ */
+#endif /* SIGNUM_SOCKET_HPP_ */

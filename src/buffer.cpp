@@ -5,10 +5,10 @@
 #include <unistd.h>   // for sysconf
 #include <sys/mman.h> // for mmap
 
-#include "comm/math.hpp"
-#include "comm/buffer.hpp"
+#include "signum/math.hpp"
+#include "signum/buffer.hpp"
 
-namespace comm
+namespace signum
 {
 namespace buffer
 {
@@ -67,7 +67,7 @@ namespace detail
 impl::impl(size_t num_items, size_t item_size)
     : d_read(0), d_write(0)
 {
-    using comm::math::gcd;
+    using signum::math::gcd;
 
     // Add an extra item to disambiguate full and empty conditions
     num_items += 1;
@@ -90,4 +90,4 @@ impl::~impl()
 
 } // namespace detail
 } // namespace buffer
-} // namespace comm
+} // namespace signum

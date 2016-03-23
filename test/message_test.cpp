@@ -2,10 +2,10 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#define BOOST_TEST_MODULE comm_tests
+#define BOOST_TEST_MODULE signum_tests
 #include <boost/test/unit_test.hpp>
 
-#include "comm/message.hpp"
+#include "signum/message.hpp"
 
 BOOST_AUTO_TEST_CASE(message_test)
 {
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(message_test)
   float f32_r;
   int32_t s32_r;
 
-  comm::message msg;
+  signum::message msg;
 
   BOOST_REQUIRE_NO_THROW(msg.serialize());
   BOOST_REQUIRE_NO_THROW(msg << b);

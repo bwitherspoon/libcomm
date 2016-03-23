@@ -2,14 +2,14 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef ALIGNED_ALLOCATOR_HPP_
-#define ALIGNED_ALLOCATOR_HPP_
+#ifndef SIGNUM_ALIGNED_ALLOCATOR_HPP_
+#define SIGNUM_ALIGNED_ALLOCATOR_HPP_
 
 #include <cstdlib>
 #include <cstddef>
 #include <new>
 
-namespace comm
+namespace signum
 {
 //! An STL compatible 16-byte aligned memory allocator
 template <typename T>
@@ -56,7 +56,7 @@ inline bool operator!=(const aligned_allocator<T>&, const aligned_allocator<U>&)
   return false;
 }
 
-} /* namespace comm */
+} /* namespace signum */
 
-#endif /* ALIGNED_ALLOCATOR_HPP_ */
+#endif /* SIGNUM_ALIGNED_ALLOCATOR_HPP_ */
 

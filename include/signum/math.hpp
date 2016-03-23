@@ -2,12 +2,12 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef MATH_HPP_
-#define MATH_HPP_
+#ifndef SIGNUM_MATH_HPP_
+#define SIGNUM_MATH_HPP_
 
 #include <type_traits>
 
-namespace comm
+namespace signum
 {
 namespace math
 {
@@ -78,5 +78,5 @@ constexpr T lcm(T a, T b)
 }
 
 } /* namespace math */
-} /* namespace comm */
-#endif /* MATH_HPP_ */
+} /* namespace signum */
+#endif /* SIGNUM_MATH_HPP_ */

@@ -2,7 +2,7 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#define BOOST_TEST_MODULE comm_tests
+#define BOOST_TEST_MODULE signum_tests
 #include <boost/test/unit_test.hpp>
 
 #include <cmath>
@@ -10,14 +10,14 @@
 #include <limits>
 #include <type_traits>
 
-#include "comm/fixed.hpp"
+#include "signum/fixed.hpp"
 
 namespace
 {
 template<typename Float, typename Fixed>
 void _fixed_to_floating_test()
 {
-  using comm::fixed_to_floating;
+  using signum::fixed_to_floating;
 
   const auto delta = 1.0 / (std::numeric_limits<Fixed>::max() + 1.0);
 
@@ -48,7 +48,7 @@ void _fixed_to_floating_test()
 template<typename Fixed, typename Float>
 void _floating_to_fixed_test()
 {
-  using comm::floating_to_fixed;
+  using signum::floating_to_fixed;
 
   const auto delta = 1.0 / (std::numeric_limits<Fixed>::max() + 1.0);
   const auto epsilon = std::numeric_limits<Float>::epsilon();

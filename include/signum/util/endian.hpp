@@ -2,13 +2,13 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef ENDIAN_HPP_
-#define ENDIAN_HPP_
+#ifndef SIGNUM_ENDIAN_HPP_
+#define SIGNUM_ENDIAN_HPP_
 
 #include <endian.h>
 #include <cstdint>
 
-namespace comm
+namespace signum
 {
 namespace util
 {
@@ -60,6 +60,6 @@ double htobe(double val);
 //! Convert host to big endian byte order
 float htobe(float val);
 } /* namespace util */
-} /* namespace comm */
+} /* namespace signum */
 
-#endif /* ENDIAN_HPP_ */
+#endif /* SIGNUM_ENDIAN_HPP_ */

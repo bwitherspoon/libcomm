@@ -6,7 +6,7 @@
 #include <limits>
 #include <type_traits>
 
-namespace comm
+namespace signum
 {
 //! Convert a fixed-point type to a floating-point type
 template<typename Float, typename Fixed>
@@ -50,4 +50,4 @@ Fixed floating_to_fixed(Float floating)
         return static_cast<Fixed>(std::lround(ret));
   }
 }
-} /* namespace comm */
+} /* namespace signum */

@@ -4,9 +4,9 @@
 
 #include <cstring>
 
-#include "comm/util/endian.hpp"
+#include "signum/util/endian.hpp"
 
-namespace comm
+namespace signum
 {
 namespace util
 {
@@ -94,4 +94,4 @@ float htobe(float val)
   return val;
 }
 } /* namespace util */
-} /* namespace comm */
+} /* namespace signum */

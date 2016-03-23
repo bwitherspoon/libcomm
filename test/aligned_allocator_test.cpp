@@ -2,7 +2,7 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#define BOOST_TEST_MODULE comm_tests
+#define BOOST_TEST_MODULE signum_tests
 #include <boost/test/unit_test.hpp>
 
 #include <algorithm>
@@ -10,14 +10,14 @@
 #include <random>
 #include <vector>
 
-#include "comm/aligned_allocator.hpp"
+#include "signum/aligned_allocator.hpp"
 
 BOOST_AUTO_TEST_CASE(aligned_allocator_test)
 {
   const std::size_t size = 2048;
 
   std::vector<float> ref(size);
-  std::vector<float, comm::aligned_allocator<float>> out(size);
+  std::vector<float, signum::aligned_allocator<float>> out(size);
 
   std::random_device dev;
   std::default_random_engine eng(dev());

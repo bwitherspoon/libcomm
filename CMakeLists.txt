@@ -10,7 +10,7 @@ else()
         "Choose the type of build: Debug Release ReleaseWithDebInfo MinSizeRel")
 endif()
 
-project(comm CXX)
+project(signum CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -34,7 +34,7 @@ endif()
 
 
 add_library(
-    comm
+    signum
     SHARED
     src/context.cpp
     src/endian.cpp
@@ -44,13 +44,13 @@ add_library(
     src/usb.cpp
     src/util/priority.cpp)
 target_link_libraries(
-    comm
+    signum
     ${ZeroMQ_LIBRARIES}
     ${LIBUSB_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
-install(TARGETS comm DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS signum DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if(DOXYGEN_FOUND)

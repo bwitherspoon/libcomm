@@ -2,14 +2,14 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#define BOOST_TEST_MODULE comm_tests
+#define BOOST_TEST_MODULE signum_tests
 #include <boost/test/unit_test.hpp>
 
-#include "comm/math.hpp"
+#include "signum/math.hpp"
 
 BOOST_AUTO_TEST_CASE(abs_test)
 {
-  using comm::math::abs;
+  using signum::math::abs;
 
   BOOST_CHECK_EQUAL(abs(-5), 5);
 
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(abs_test)
 
 BOOST_AUTO_TEST_CASE(max_test)
 {
-  using comm::math::max;
+  using signum::math::max;
 
   BOOST_CHECK_EQUAL(max(-7, 5), 5);
 
@@ -33,14 +33,14 @@ BOOST_AUTO_TEST_CASE(max_test)
 
 BOOST_AUTO_TEST_CASE(gcd_test)
 {
-  using comm::math::gcd;
+  using signum::math::gcd;
 
   BOOST_CHECK_EQUAL(gcd(6, 15), 3);
 }
 
 BOOST_AUTO_TEST_CASE(lcm_test)
 {
-  using comm::math::lcm;
+  using signum::math::lcm;
 
   BOOST_CHECK_EQUAL(lcm(4, 10), 20);
 }

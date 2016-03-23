@@ -3,10 +3,10 @@
  */
 
 #include <zmq.h>
-#include "comm/socket.hpp"
-#include "comm/message.hpp"
+#include "signum/socket.hpp"
+#include "signum/message.hpp"
 
-namespace comm
+namespace signum
 {
 socket::socket(void* context, socket::types type)
 {
@@ -77,5 +77,5 @@ socket::socket_error::socket_error(
 socket::socket_error::socket_error(const std::string& where)
         : socket_error(where, zmq_strerror(zmq_errno()))
 { }
-} /* namespace comm */
+} /* namespace signum */
 

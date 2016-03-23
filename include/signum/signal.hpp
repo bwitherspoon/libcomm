@@ -2,14 +2,14 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef COMM_SIGNAL_HPP_
-#define COMM_SIGNAL_HPP_
+#ifndef SIGNUM_SIGNAL_HPP_
+#define SIGNUM_SIGNAL_HPP_
 
 #include <cstddef>     // for size_t, ptrdiff_t
 #include <type_traits> // for std::is_arithmetic
 #include <vector>      // for std::vector
 
-namespace comm
+namespace signum
 {
 template<typename T>
 class signal final
@@ -69,5 +69,5 @@ signal<T>::signal(std::vector<T> & vec)
   : d_begin(vec.data()), d_end(d_begin + vec.size())
 { }
 
-} // namespace comm
-#endif /* COMM_SIGNAL_HPP_ */
+} // namespace signum
+#endif /* SIGNUM_SIGNAL_HPP_ */

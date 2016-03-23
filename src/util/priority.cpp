@@ -6,7 +6,7 @@
 
 #include <pthread.h>
 
-namespace comm
+namespace signum
 {
 namespace util
 {
@@ -29,4 +29,4 @@ void set_normal_priority()
 
 
 } // end namespace util
-} // end namespace comm
+} // end namespace signum
