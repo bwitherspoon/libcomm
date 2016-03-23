@@ -22,6 +22,26 @@
 
 namespace po = boost::program_options;
 
+// These calls block until reader is available
+int create_named_pipe(std::string name)
+{
+    // Try to open the pipe first in case it exists
+    int fd = open(name.c_str(), O_WRONLY);
+
+    // If open failed try to create the pipe
+    if (fd == -1)
+    {
+        if (mkfifo(name.c_str(), 0666) == -1)
+            throw std::runtime_error("Unable to create a named pipe");
+
+        fd = open(name.c_str(), O_WRONLY);
+        if (fd == -1)
+            throw std::runtime_error("Unable to open the named pipe");
+    }
+
+    return fd;
+}
+
 int main (int argc, char *argv[])
 {
     uint16_t vid;
@@ -48,14 +68,9 @@ int main (int argc, char *argv[])
 
     std::atomic<size_t> sum(0);
 
+    int fd = create_named_pipe(vm["name"].as<std::string>());
+
     signum::util::set_realtime_priority();
-
-    if (mkfifo(vm["name"].as<std::string>().c_str(), 0666) == -1)
-        throw std::runtime_error("Unable to create a named pipe");
-
-    int fd = open(vm["name"].as<std::string>().c_str(), O_WRONLY);
-    if (fd == -1)
-        throw std::runtime_error("Unable to open the named pipe");
 
     signum::usb::source src(vid, pid, static_cast<signum::usb::endpoint>(ep));
 
@@ -63,23 +78,27 @@ int main (int argc, char *argv[])
     usb.detach();
 
     std::thread throughput([&]{
-        std::cout << std::fixed << std::setprecision(2);
+        const char rot[] = { '-', '\\', '|', '/'};
+        int idx = 0;
+
+        signum::util::set_normal_priority();
+
+        std::cout << std::fixed << std::setprecision(2) << std::endl;
 
         while (true)
         {
-            signum::util::set_normal_priority();
-
             sum = 0;
 
             auto start = std::chrono::steady_clock::now();
-
             std::this_thread::sleep_for(std::chrono::seconds(1));
-
             auto end = std::chrono::steady_clock::now();
-
             std::chrono::duration<double> diff = end - start;
 
-            std::cout << "Effective rate: " << sum / 2.0 / diff.count() / 1e6 << " Msps" << std::endl;
+            auto rate = sum / 2.0 / diff.count() / 1e6;
+
+            std::cout << "\r" << rot[idx] << " Rate: " << rate << " Msps " << rot[idx] << std::flush;
+
+            idx = (idx + 1) % 4;
         }
     });
     throughput.detach();
@@ -88,7 +107,7 @@ int main (int argc, char *argv[])
 
     while (true)
     {
-        out.wait(2048);
+        out.wait(4096);
 
         size_t len = out.size();
 
