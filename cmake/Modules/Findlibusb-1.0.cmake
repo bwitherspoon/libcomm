@@ -16,13 +16,13 @@ find_path(
     HINTS ${PC_LIBUSB_INCLUDE_DIRS} ${PC_LIBUSB_INCLUDEDIR}
 )
 find_library(
-    LIBUSB_LIBRARIES NAMES usb-1.0 libusb-1.0
+    LIBUSB_LIBRARIES NAMES usb-1.0 usb
     HINTS ${PC_LIBUSB_LIBRARY_DIRS} ${PC_LIBUSB_LIBDIR}
 )
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
-    libusb-1.0
+    libusb
     DEFAULT_MSG
     LIBUSB_INCLUDE_DIRS
     LIBUSB_LIBRARIES
