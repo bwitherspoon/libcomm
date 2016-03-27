@@ -90,7 +90,7 @@ cl_device_id id(const std::string &plat, const std::string &name)
     });
 
     if (it == ids.end())
-        throw opencl_error("Device not found: " + name);
+        throw device_not_found(__func__);
 
     return *it;
 }

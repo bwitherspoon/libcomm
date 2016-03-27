@@ -16,27 +16,65 @@ namespace signum
 namespace opencl
 {
 
-struct opencl_error : public std::runtime_error
+struct general_error : public std::runtime_error
 {
-    opencl_error(const std::string &what) : runtime_error(what) { }
+    general_error(const std::string &what, const std::string &where)
+        : runtime_error(where + ": OpenCL: " + what)
+    { }
 };
 
-static inline void throw_on_error(const cl_int error)
+struct platform_not_found : public general_error
+{
+    platform_not_found(const std::string &where)
+        : general_error("Platform not found", where)
+    { }
+};
+
+struct device_not_found : public general_error
+{
+    device_not_found(const std::string &where)
+        : general_error("Device not found", where)
+    { }
+};
+
+
+struct invalid_value : public general_error
+{
+    invalid_value(const std::string &where)
+        : general_error("Invalid value", where)
+    { }
+};
+
+struct out_of_host_memory: public general_error
+{
+    out_of_host_memory(const std::string &where)
+        : general_error("Out of host memory", where)
+    { }
+};
+
+struct invalid_platform: public general_error
+{
+    invalid_platform(const std::string &where)
+        : general_error("Invalid platform", where)
+    { }
+};
+
+static inline void throw_on_error(const cl_int error, const std::string &where = "(unknown)")
 {
     switch (error)
     {
     case CL_SUCCESS:
         return;
     case CL_PLATFORM_NOT_FOUND_KHR:
-        return;
+        throw platform_not_found(where);
     case CL_INVALID_VALUE:
-        throw opencl_error("Invalid value");
+        throw invalid_value(where);
     case CL_OUT_OF_HOST_MEMORY:
-        throw opencl_error("Host out of memory");
+        throw out_of_host_memory(where);
     case CL_INVALID_PLATFORM:
-        throw opencl_error("Invalid platform");
+        throw invalid_platform(where);
     default:
-        throw opencl_error("Unknown error");
+        throw general_error("General error", where);
     }
 }
 

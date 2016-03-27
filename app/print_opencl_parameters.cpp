@@ -18,9 +18,10 @@ int main(int argc, char *argv[])
     {
         platforms = opencl::platform::query();
     }
-    catch (opencl::opencl_error &e)
+    catch (opencl::general_error &e)
     {
-        std::cout << "OpenCL: " << e.what();
+        std::cout << e.what() << std::endl;;
+        return 1;
     }
 
     if (platforms.empty())
@@ -42,8 +43,8 @@ int main(int argc, char *argv[])
         auto it = plat.find("Name");
         if (it == plat.end())
         {
-            std::cout << "No devices on platform" << std::endl;
-            continue;
+            std::cerr << "OpenCL: Unable to find platform name" << std::endl;
+            return 1;
         }
 
         opencl::device::parameters devices;
@@ -51,9 +52,10 @@ int main(int argc, char *argv[])
         {
             devices = opencl::device::query(it->second);
         }
-        catch (opencl::opencl_error &e)
+        catch (opencl::general_error &e)
         {
-            std::cout << "OpenCL: " << e.what();
+            std::cout << e.what() << std::endl;
+            return 1;
         }
 
         if (devices.empty())

@@ -19,13 +19,13 @@ std::vector<cl_platform_id> get_ids()
     cl_uint num_platforms;
 
     // Get the number of platforms
-    throw_on_error(clGetPlatformIDs(0, nullptr, &num_platforms));
+    throw_on_error(clGetPlatformIDs(0, nullptr, &num_platforms), __func__);
 
     // Get all the platforms if not empty
     std::vector<cl_platform_id> platforms(num_platforms);
 
     if (!platforms.empty())
-        throw_on_error(clGetPlatformIDs(platforms.size(), platforms.data(), nullptr));
+        throw_on_error(clGetPlatformIDs(platforms.size(), platforms.data(), nullptr), __func__);
 
     return std::move(platforms);
 }
@@ -36,11 +36,11 @@ std::string get_info(cl_platform_id id, cl_platform_info info)
 
     // Get parameter size
     size_t size;
-    throw_on_error(clGetPlatformInfo(id, info, 0, nullptr, &size));
+    throw_on_error(clGetPlatformInfo(id, info, 0, nullptr, &size), __func__);
 
     // Get parameter
     auto param = std::unique_ptr<char[]>(new char[size]);
-    throw_on_error(clGetPlatformInfo(id, info, size, param.get(), nullptr));
+    throw_on_error(clGetPlatformInfo(id, info, size, param.get(), nullptr), __func__);
 
     return std::string(param.get());
 }
@@ -91,7 +91,7 @@ cl_platform_id id(const std::string &name)
     });
 
     if (it == ids.end())
-        throw opencl_error("Platform not found: " + name);
+        throw platform_not_found(__func__);
 
     return *it;
 }
