@@ -51,10 +51,12 @@ namespace signum
 {
 namespace opencl
 {
-
-platform::parameters platform::query()
+namespace platform
 {
-    static const std::map<cl_platform_info, std::string> mapping = {
+
+parameters query()
+{
+    static const std::map<cl_platform_info, std::string> mappings = {
             {CL_PLATFORM_PROFILE,    "Profile"   },
             {CL_PLATFORM_VERSION,    "Version"   },
             {CL_PLATFORM_NAME,       "Name"      },
@@ -69,9 +71,9 @@ platform::parameters platform::query()
     {
         std::map<std::string,std::string> entry;
 
-        for (const auto &info_name : mapping)
+        for (const auto &map : mappings)
         {
-            entry.insert(std::make_pair(info_name.second, get_info(id, info_name.first)));
+            entry.insert(std::make_pair(map.second, get_info(id, map.first)));
         }
 
         result.push_back(std::move(entry));
@@ -80,19 +82,20 @@ platform::parameters platform::query()
     return std::move(result);
 }
 
-platform::platform(const std::string &name)
+cl_platform_id id(const std::string &name)
 {
     auto ids = get_ids();
 
-    auto id = std::find_if(ids.begin(), ids.end(), [&](const auto &id) {
+    auto it = std::find_if(ids.begin(), ids.end(), [&name](const auto &id) {
         return get_info(id, CL_PLATFORM_NAME) == name;
     });
 
-    if (id == ids.end())
+    if (it == ids.end())
         throw opencl_error("Platform not found: " + name);
-    else
-        _id = *id;
+
+    return *it;
 }
 
+} // end namespace platform
 } // end namespace signum
 } // end namespace opencl

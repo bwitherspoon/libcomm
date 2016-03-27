@@ -15,32 +15,26 @@ namespace signum
 {
 namespace opencl
 {
-
-class platform
+namespace platform
 {
-public:
-    using parameters = std::vector<std::map<std::string,std::string>>;
 
-    /**
-     * Query the parameters of the available platforms.
-     *
-     * \return the parameters of all the available platforms
-     */
-    static parameters query();
+using parameters = std::vector<std::map<std::string,std::string>>;
 
-    /**
-     * Construct a platform object with the given name.
-     *
-     * \param name the name of the platform
-     */
-    platform(const std::string &name);
+/**
+ * Query the parameters of all the available platforms.
+ *
+ * \return the parameters of all the available platforms
+ */
+parameters query();
 
-private:
-    std::vector<std::map<cl_platform_info,std::string>> infos();
+/**
+ * Find the ID of a platform by name
+ *
+ * \param name the name of the platform to find
+ */
+cl_platform_id id(const std::string &name);
 
-    cl_platform_id _id;
-};
-
+} // end namespace platform
 } // end namespace signum
 } // end namespace opengl
 
