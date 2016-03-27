@@ -58,7 +58,7 @@ endif()
 if (DOXYGEN_FOUND)
     add_subdirectory(doc)
 else()
-    message(INFO, "Documentation will not be built")
+    message(WARNING "Building without Doxygen support")
 endif()
 
 add_subdirectory(app)
