@@ -10,7 +10,7 @@ else()
         "Choose the type of build: Debug Release ReleaseWithDebInfo MinSizeRel")
 endif()
 
-project(signum CXX)
+project(signum C CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -21,6 +21,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 add_compile_options(-march=native -std=gnu++14 -Werror -Wall -pipe)
 
+set(THREADS_PREFER_PTHREAD_FLAG)
 find_package(Threads REQUIRED)
 find_package(Doxygen)
 find_package(ZeroMQ)
