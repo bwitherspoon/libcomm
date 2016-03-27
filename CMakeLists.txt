@@ -26,6 +26,7 @@ find_package(Threads REQUIRED)
 find_package(Doxygen)
 find_package(ZeroMQ)
 find_package(libusb-1.0)
+find_package(OpenCL)
 
 include_directories(include)
 
@@ -35,31 +36,33 @@ set(
     src/message.cpp
     src/buffer.cpp
 )
-
 if (ZEROMQ_FOUND)
     list(APPEND SOURCES src/context.cpp src/socket.cpp)
     include_directories(${ZeroMQ_INCLUDE_DIRS})
 else()
     message(WARNING "Building without ZeroMQ support")
 endif()
-
 if (LIBUSB_FOUND)
     list(APPEND SOURCES src/usb.cpp)
     include_directories(${LIBUSB_INCLUDE_DIRS})
 else()
     message(WARNING "Building without USB support")
 endif()
-
 if (CMAKE_USE_PTHREADS_INIT)
     list(APPEND SOURCES src/util/priority.cpp)
 else()
     message(WARNING "Building without POSIX threads support")
 endif()
-
 if (DOXYGEN_FOUND)
     add_subdirectory(doc)
 else()
     message(WARNING "Building without Doxygen support")
+endif()
+if (OPENCL_FOUND)
+    list(APPEND SOURCES src/opengl/platform.cpp)
+    include_directories(${OpenCL_INCLUDE_DIRS})
+else()
+    message(WARNING "Building without OpenCL support")
 endif()
 
 add_subdirectory(app)
@@ -74,6 +77,9 @@ if (ZEROMQ_FOUND)
 endif()
 if (LIBUSB_FOUND)
     target_link_libraries(signum ${LIBUSB_LIBRARIES})
+endif()
+if (OPENCL_FOUND)
+    target_link_libraries(signum ${OpenCL_LIBRARIES})
 endif()
 
 install(TARGETS signum DESTINATION ${CMAKE_INSTALL_LIBDIR})
