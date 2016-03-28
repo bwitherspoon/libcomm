@@ -6,17 +6,17 @@
 
 #include <signum/opencl/error.hpp>
 #include <signum/opencl/device.hpp>
-#include <signum/opencl/platform.hpp>
+#include <signum/opencl/platforms.hpp>
 
 using namespace signum;
 
 int main(int argc, char *argv[])
 {
     // Query platform parameters
-    opencl::platform::parameters platforms;
+    opencl::platforms::parameters platforms;
     try
     {
-        platforms = opencl::platform::query();
+        platforms = opencl::platforms::query();
     }
     catch (opencl::general_error &e)
     {

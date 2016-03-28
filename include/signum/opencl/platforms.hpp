@@ -2,8 +2,8 @@
  * Copyright 2016 C. Brett Witherspoon
  */
 
-#ifndef SIGNUM_OPENCL_PLATFORM_HPP_
-#define SIGNUM_OPENCL_PLATFORM_HPP_
+#ifndef SIGNUM_OPENCL_PLATFORMS_HPP_
+#define SIGNUM_OPENCL_PLATFORMS_HPP_
 
 #include <string>
 #include <map>
@@ -15,7 +15,7 @@ namespace signum
 {
 namespace opencl
 {
-namespace platform
+namespace platforms
 {
 
 using parameters = std::vector<std::map<std::string,std::string>>;
@@ -34,8 +34,8 @@ parameters query();
  */
 cl_platform_id id(const std::string &name);
 
-} // end namespace platform
+} // end namespace platforms
+} // end namespace opencl
 } // end namespace signum
-} // end namespace opengl
 
 #endif /* SIGNUM_OPENCL_PLATFORM_HPP_ */

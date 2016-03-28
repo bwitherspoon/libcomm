@@ -6,8 +6,8 @@
 #include <memory>
 #include <utility>
 
+#include "signum/opencl/platforms.hpp"
 #include "signum/opencl/error.hpp"
-#include "signum/opencl/platform.hpp"
 
 namespace
 {
@@ -51,7 +51,7 @@ namespace signum
 {
 namespace opencl
 {
-namespace platform
+namespace platforms
 {
 
 parameters query()
@@ -64,7 +64,7 @@ parameters query()
             {CL_PLATFORM_EXTENSIONS, "Extensions"}
     };
 
-    platform::parameters result;
+    platforms::parameters result;
 
     // Query all platform attributes
     for (const auto &id : get_ids())

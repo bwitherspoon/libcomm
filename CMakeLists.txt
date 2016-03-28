@@ -57,8 +57,7 @@ endif()
 
 if (OPENCL_FOUND)
     list(APPEND SOURCES
-        src/opengl/platform.cpp
-        src/opengl/context.cpp
+        src/opengl/platforms.cpp
         src/opengl/device.cpp)
     include_directories(${OpenCL_INCLUDE_DIRS})
 else()

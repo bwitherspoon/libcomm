@@ -6,8 +6,8 @@
 #include <memory>
 
 #include "signum/opencl/device.hpp"
+#include "signum/opencl/platforms.hpp"
 #include "signum/opencl/error.hpp"
-#include "signum/opencl/platform.hpp"
 
 namespace
 {
@@ -66,7 +66,7 @@ parameters query(const std::string &plat)
 
     parameters params;
 
-    for (const auto &id : get_ids(platform::id(plat)))
+    for (const auto &id : get_ids(platforms::id(plat)))
     {
         std::map<std::string,std::string> entry;
 
@@ -83,7 +83,7 @@ parameters query(const std::string &plat)
 
 cl_device_id id(const std::string &plat, const std::string &name)
 {
-    auto ids = get_ids(platform::id(plat));
+    auto ids = get_ids(platforms::id(plat));
 
     auto it = std::find_if(ids.begin(), ids.end(), [&](const auto &id) {
         return get_info(id, CL_DEVICE_NAME) == name;
