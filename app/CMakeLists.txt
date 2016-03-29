@@ -11,8 +11,8 @@ if (CMAKE_USE_PTHREADS_INIT AND LIBUSB_FOUND)
 endif()
 
 if (OPENCL_FOUND)
-    add_executable(print_opencl_parameters print_opencl_parameters.cpp)
-    target_link_libraries(print_opencl_parameters signum ${Boost_LIBRARIES})
-    install(TARGETS print_opencl_parameters DESTINATION ${CMAKE_INSTALL_BINDIR})
+    add_executable(opencl_info opencl_info.cpp)
+    target_link_libraries(opencl_info signum ${Boost_LIBRARIES})
+    install(TARGETS opencl_info DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
