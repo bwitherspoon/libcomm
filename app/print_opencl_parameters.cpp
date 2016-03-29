@@ -65,12 +65,12 @@ int main(int argc, char *argv[])
         }
 
         // Print device parameters of platform
-        std::cout << std::endl << "Devices: " << std::endl << std::endl;
+        std::cout << std::endl << "\tDevices: " << std::endl << std::endl;
         for (const auto &dev: devices)
         {
             for (const auto &param : dev)
             {
-                std::cout << param.first << ": " << param.second << std::endl;
+                std::cout << "\t" << param.first << ": " << param.second << std::endl;
             }
             std::cout << std::endl;
         }
