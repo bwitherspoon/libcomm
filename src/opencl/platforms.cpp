@@ -86,6 +86,12 @@ cl_platform_id id(const std::string &name)
 {
     auto ids = get_ids();
 
+    if (ids.empty())
+        throw platform_not_found(__func__);
+
+    if (name == "")
+        return ids[0];
+
     auto it = std::find_if(ids.begin(), ids.end(), [&name](const auto &id) {
         return get_info(id, CL_PLATFORM_NAME) == name;
     });
