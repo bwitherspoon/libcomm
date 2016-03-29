@@ -11,7 +11,7 @@
 #include <signum/util/priority.hpp>
 #include <signum/opencl/session.hpp>
 
-static const size_t buff_size = 4096; //256*1024*1024;
+static const size_t buff_size = 32*1024*1024;
 
 using namespace signum;
 
@@ -54,7 +54,8 @@ void opencl_scalar_fixed_to_float()
 
     kernel.unmap_buffer(1, std::make_pair(ptr1, size1));
 
-    std::cout << buf1[size1/sizeof(cl_float)-1] << std::endl;
+    // The compiler is sensitive about unused variables
+    (void)buf1;
 }
 
 void opencl_vector_fixed_to_float()
@@ -96,7 +97,8 @@ void opencl_vector_fixed_to_float()
 
     kernel.unmap_buffer(1, std::make_pair(ptr1, size1));
 
-    std::cout << buf1[size1/sizeof(cl_float)-1] << std::endl;
+    // The compiler is sensitive about unused variables
+    (void)buf1;
 }
 
 void cpu_fixed_to_float()
@@ -118,7 +120,8 @@ void cpu_fixed_to_float()
     std::chrono::duration<double> diff = end - start;
     std::cout << __func__ << ": " << diff.count() / 1e6 << " us ";
 
-    std::cout << buf1[buf1.size()-1] << std::endl;
+    // The compiler is sensitive about unused variables
+    (void)buf1;
 }
 
 int main (int argc, char *argv[])
