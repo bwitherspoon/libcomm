@@ -72,7 +72,7 @@ else()
     message(WARNING "Building without Doxygen support")
 endif()
 
-add_subdirectory(app)
+add_subdirectory(examples)
 
 enable_testing()
 add_subdirectory(test)
