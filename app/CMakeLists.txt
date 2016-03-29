@@ -14,5 +14,10 @@ if (OPENCL_FOUND)
     add_executable(opencl_info opencl_info.cpp)
     target_link_libraries(opencl_info signum ${Boost_LIBRARIES})
     install(TARGETS opencl_info DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+    add_executable(opencl_fixed_to_float opencl_fixed_to_float.cpp)
+    target_link_libraries(opencl_fixed_to_float signum ${Boost_LIBRARIES})
+    install(TARGETS opencl_fixed_to_float DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES opencl_fixed_to_float.cl DESTINATION ${CMAKE_INSTALL_DATADIR})
 endif()
 
