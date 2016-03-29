@@ -57,8 +57,8 @@ endif()
 
 if (OPENCL_FOUND)
     list(APPEND SOURCES
-        src/opengl/platforms.cpp
-        src/opengl/device.cpp)
+        src/opencl/platforms.cpp
+        src/opencl/device.cpp)
     include_directories(${OpenCL_INCLUDE_DIRS})
 else()
     message(WARNING "Building without OpenCL support")
