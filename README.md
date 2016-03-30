@@ -1,7 +1,7 @@
 Signum
 =======
 
-This is a library for signals and communication systems.
+A library for signal processing and communication systems.
 
 Dependencies
 ------------
