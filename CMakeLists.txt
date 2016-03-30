@@ -90,6 +90,12 @@ if (OPENCL_FOUND)
     target_link_libraries(signum ${OpenCL_LIBRARIES})
 endif()
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/signum.pc.in
+               ${CMAKE_CURRENT_BINARY_DIR}/signum.pc
+               @ONLY)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/signum.pc
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 install(TARGETS signum DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
