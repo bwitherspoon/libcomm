@@ -114,7 +114,7 @@ void cpu_fixed_to_float()
     auto start = std::chrono::steady_clock::now();
     for (auto i = 0U; i < buf0.size(); ++i)
     {
-        buf1[i] = signum::fixed_to_floating<float>(buf0[i]);
+        buf1[i] = signum::fixed_to_float<float>(buf0[i]);
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;

@@ -15,9 +15,9 @@
 namespace
 {
 template<typename Float, typename Fixed>
-void _fixed_to_floating_test()
+void _fixed_to_float_test()
 {
-  using signum::fixed_to_floating;
+  using signum::fixed_to_float;
 
   const auto delta = 1.0 / (std::numeric_limits<Fixed>::max() + 1.0);
 
@@ -30,9 +30,9 @@ void _fixed_to_floating_test()
   const auto fixed_upper  = std::numeric_limits<Fixed>::max();
   const auto float_upper  = 1.0 - delta;
 
-  const auto lower  = fixed_to_floating<Float, Fixed>(fixed_lower);
-  const auto median = fixed_to_floating<Float, Fixed>(fixed_median);
-  const auto upper  = fixed_to_floating<Float, Fixed>(fixed_upper);
+  const auto lower  = fixed_to_float<Float, Fixed>(fixed_lower);
+  const auto median = fixed_to_float<Float, Fixed>(fixed_median);
+  const auto upper  = fixed_to_float<Float, Fixed>(fixed_upper);
 
   BOOST_CHECK_CLOSE(lower,
                     static_cast<Float>(float_lower),
@@ -46,9 +46,9 @@ void _fixed_to_floating_test()
 }
 
 template<typename Fixed, typename Float>
-void _floating_to_fixed_test()
+void _float_to_fixed_test()
 {
-  using signum::floating_to_fixed;
+  using signum::float_to_fixed;
 
   const auto delta = 1.0 / (std::numeric_limits<Fixed>::max() + 1.0);
   const auto epsilon = std::numeric_limits<Float>::epsilon();
@@ -62,9 +62,9 @@ void _floating_to_fixed_test()
   const auto fixed_upper  = std::numeric_limits<Fixed>::max();
   const auto float_upper  = 1.0 - epsilon - delta;
 
-  const auto lower  = floating_to_fixed<Fixed, Float>(float_lower);
-  const auto median = floating_to_fixed<Fixed, Float>(float_median);
-  const auto upper  = floating_to_fixed<Fixed, Float>(float_upper);
+  const auto lower  = float_to_fixed<Fixed, Float>(float_lower);
+  const auto median = float_to_fixed<Fixed, Float>(float_median);
+  const auto upper  = float_to_fixed<Fixed, Float>(float_upper);
 
   BOOST_CHECK_EQUAL(lower, fixed_lower);
   BOOST_CHECK_EQUAL(median, fixed_median);
@@ -72,61 +72,61 @@ void _floating_to_fixed_test()
 }
 } // namespace (anonymous)
 
-BOOST_AUTO_TEST_CASE(fixed_to_floating_unsigned_single_test)
+BOOST_AUTO_TEST_CASE(fixed_to_float_unsigned_single_test)
 {
-  _fixed_to_floating_test<float, uint8_t>();
-  _fixed_to_floating_test<float, uint16_t>();
-  _fixed_to_floating_test<float, uint32_t>();
-  _fixed_to_floating_test<float, uint64_t>();
+  _fixed_to_float_test<float, uint8_t>();
+  _fixed_to_float_test<float, uint16_t>();
+  _fixed_to_float_test<float, uint32_t>();
+  _fixed_to_float_test<float, uint64_t>();
 }
 
-BOOST_AUTO_TEST_CASE(fixed_to_floating_signed_single_test)
+BOOST_AUTO_TEST_CASE(fixed_to_float_signed_single_test)
 {
-  _fixed_to_floating_test<float, int8_t>();
-  _fixed_to_floating_test<float, int16_t>();
-  _fixed_to_floating_test<float, int32_t>();
-  _fixed_to_floating_test<float, int64_t>();
+  _fixed_to_float_test<float, int8_t>();
+  _fixed_to_float_test<float, int16_t>();
+  _fixed_to_float_test<float, int32_t>();
+  _fixed_to_float_test<float, int64_t>();
 }
 
-BOOST_AUTO_TEST_CASE(fixed_to_floating_unsigned_double_test)
+BOOST_AUTO_TEST_CASE(fixed_to_float_unsigned_double_test)
 {
-  _fixed_to_floating_test<double, uint8_t>();
-  _fixed_to_floating_test<double, uint16_t>();
-  _fixed_to_floating_test<double, uint32_t>();
-  _fixed_to_floating_test<double, uint64_t>();
+  _fixed_to_float_test<double, uint8_t>();
+  _fixed_to_float_test<double, uint16_t>();
+  _fixed_to_float_test<double, uint32_t>();
+  _fixed_to_float_test<double, uint64_t>();
 }
 
-BOOST_AUTO_TEST_CASE(fixed_to_floating_signed_double_test)
+BOOST_AUTO_TEST_CASE(fixed_to_float_signed_double_test)
 {
-  _fixed_to_floating_test<double, int8_t>();
-  _fixed_to_floating_test<double, int16_t>();
-  _fixed_to_floating_test<double, int32_t>();
-  _fixed_to_floating_test<double, int64_t>();
+  _fixed_to_float_test<double, int8_t>();
+  _fixed_to_float_test<double, int16_t>();
+  _fixed_to_float_test<double, int32_t>();
+  _fixed_to_float_test<double, int64_t>();
 }
 
-BOOST_AUTO_TEST_CASE(floating_to_fixed_unsigned_single_test)
+BOOST_AUTO_TEST_CASE(float_to_fixed_unsigned_single_test)
 {
-  _floating_to_fixed_test<uint8_t, float>();
-  _floating_to_fixed_test<uint16_t, float>();
+  _float_to_fixed_test<uint8_t, float>();
+  _float_to_fixed_test<uint16_t, float>();
 }
 
-BOOST_AUTO_TEST_CASE(floating_to_fixed_signed_single_test)
+BOOST_AUTO_TEST_CASE(float_to_fixed_signed_single_test)
 {
-  _floating_to_fixed_test<int8_t, float>();
-  _floating_to_fixed_test<int16_t, float>();
+  _float_to_fixed_test<int8_t, float>();
+  _float_to_fixed_test<int16_t, float>();
 }
 
-BOOST_AUTO_TEST_CASE(floating_to_fixed_unsigned_double_test)
+BOOST_AUTO_TEST_CASE(float_to_fixed_unsigned_double_test)
 {
-  _floating_to_fixed_test<uint8_t, double>();
-  _floating_to_fixed_test<uint16_t, double>();
-  _floating_to_fixed_test<uint32_t, double>();
+  _float_to_fixed_test<uint8_t, double>();
+  _float_to_fixed_test<uint16_t, double>();
+  _float_to_fixed_test<uint32_t, double>();
 }
 
-BOOST_AUTO_TEST_CASE(floating_to_fixed_signed_double_test)
+BOOST_AUTO_TEST_CASE(float_to_fixed_signed_double_test)
 {
-  _floating_to_fixed_test<int8_t, double>();
-  _floating_to_fixed_test<int16_t, double>();
-  _floating_to_fixed_test<int32_t, double>();
+  _float_to_fixed_test<int8_t, double>();
+  _float_to_fixed_test<int16_t, double>();
+  _float_to_fixed_test<int32_t, double>();
 }
 

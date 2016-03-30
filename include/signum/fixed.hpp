@@ -13,7 +13,7 @@ namespace signum
 {
 //! Convert a fixed-point type to a floating-point type
 template<typename Float, typename Fixed>
-Float fixed_to_floating(Fixed fixed)
+Float fixed_to_float(Fixed fixed)
 {
   static_assert(
     std::is_floating_point<Float>::value && std::is_integral<Fixed>::value,
@@ -26,7 +26,7 @@ Float fixed_to_floating(Fixed fixed)
 
 //! Convert a floating-point type to a fixed-point type
 template<typename Fixed, typename Float>
-Fixed floating_to_fixed(Float floating)
+Fixed float_to_fixed(Float floating)
 {
   static_assert(
     std::is_floating_point<Float>::value && std::is_integral<Fixed>::value,
