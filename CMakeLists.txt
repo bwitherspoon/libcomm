@@ -43,7 +43,7 @@ set(HEADERS
     include/signum/util/endian.hpp)
 
 set(SOURCES
-    src/endian.cpp
+    src/util/endian.cpp
     src/message.cpp
     src/buffer.cpp)
 
