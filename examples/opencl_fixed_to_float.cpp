@@ -17,7 +17,7 @@ using namespace signum;
 
 void opencl_scalar_fixed_to_float()
 {
-    opencl::session session("", "fixed_to_float.cl");
+    opencl::session session("", "opencl_fixed_to_float.cl");
 
     auto kernel = session.create_kernel("fixed_to_float");
 
@@ -43,7 +43,7 @@ void opencl_scalar_fixed_to_float()
     kernel.wait();
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
-    std::cout << __func__ << ": " << diff.count() / 1e6 << " us ";
+    std::cout << __func__ << ": " << diff.count() / 1e6 << " us " << std::endl;
 
     void *ptr1;
     size_t size1;
@@ -60,7 +60,7 @@ void opencl_scalar_fixed_to_float()
 
 void opencl_vector_fixed_to_float()
 {
-    opencl::session session("", "fixed_to_float.cl");
+    opencl::session session("", "opencl_fixed_to_float.cl");
 
     auto kernel = session.create_kernel("fixed4_to_float4");
 
@@ -86,7 +86,7 @@ void opencl_vector_fixed_to_float()
     kernel.wait();
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
-    std::cout << __func__ << ": " << diff.count() / 1e6 << " us ";
+    std::cout << __func__ << ": " << diff.count() / 1e6 << " us " << std::endl;
 
     void *ptr1;
     size_t size1;
@@ -118,7 +118,7 @@ void cpu_fixed_to_float()
     }
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> diff = end - start;
-    std::cout << __func__ << ": " << diff.count() / 1e6 << " us ";
+    std::cout << __func__ << ": " << diff.count() / 1e6 << " us " << std::endl;
 
     // The compiler is sensitive about unused variables
     (void)buf1;
