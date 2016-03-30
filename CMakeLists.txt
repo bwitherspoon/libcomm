@@ -11,6 +11,7 @@ else()
 endif()
 
 project(signum C CXX)
+enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -30,6 +31,17 @@ find_package(OpenCL)
 
 include_directories(include)
 
+set(HEADERS
+    include/signum/aligned_allocator.hpp
+    include/signum/buffer.hpp
+    include/signum/fixed.hpp
+    include/signum/math.hpp
+    include/signum/message.hpp
+    include/signum/oscillator.hpp
+    include/signum/rational_resampler.hpp
+    include/signum/signal.hpp
+    include/signum/util/endian.hpp)
+
 set(SOURCES
     src/endian.cpp
     src/message.cpp
@@ -37,6 +49,7 @@ set(SOURCES
 
 if (ZEROMQ_FOUND)
     list(APPEND SOURCES src/zeromq/context.cpp src/zeromq/socket.cpp)
+    list(APPEND HEADERS include/signum/zeromq/socket.cpp)
     include_directories(${ZeroMQ_INCLUDE_DIRS})
 else()
     message(WARNING "Building without ZeroMQ support")
@@ -44,6 +57,7 @@ endif()
 
 if (LIBUSB_FOUND)
     list(APPEND SOURCES src/usb.cpp)
+    list(APPEND HEADERS include/signum/usb.cpp)
     include_directories(${LIBUSB_INCLUDE_DIRS})
 else()
     message(WARNING "Building without USB support")
@@ -51,6 +65,7 @@ endif()
 
 if (CMAKE_USE_PTHREADS_INIT)
     list(APPEND SOURCES src/util/priority.cpp)
+    list(APPEND HEADERS include/signum/util/priority.cpp)
 else()
     message(WARNING "Building without POSIX threads support")
 endif()
@@ -61,6 +76,12 @@ if (OPENCL_FOUND)
         src/opencl/kernel.cpp
         src/opencl/platforms.cpp
         src/opencl/session.cpp)
+    list(APPEND HEADERS
+        include/signum/opencl/device.cpp
+        include/signum/opencl/error.cpp
+        include/signum/opencl/kernel.cpp
+        include/signum/opencl/platforms.cpp
+        include/signum/opencl/session.cpp)
     include_directories(${OpenCL_INCLUDE_DIRS})
 else()
     message(WARNING "Building without OpenCL support")
@@ -73,8 +94,6 @@ else()
 endif()
 
 add_subdirectory(examples)
-
-enable_testing()
 add_subdirectory(test)
 
 add_library(signum SHARED ${SOURCES})
