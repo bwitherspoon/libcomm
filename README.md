@@ -6,13 +6,18 @@ This is a library for signals and communication systems.
 Dependencies
 ------------
 
-Required to compile and run tests:
+Required to compile the library:
 
 - [CMake](http://www.cmake.org/)
-- [Boost.Test](http://www.boost.org/)
 - [ZeroMQ](http://zeromq.org/)
+- [libusb](http://libusb.info/)
+- [OpenCL](https://www.khronos.org/opencl/)
 
-Required to build documentation:
+Required for running the tests:
+
+- [Boost.Test](http://www.boost.org/)
+
+Required to build the documentation:
 
 - [Doxygen](http://www.doxygen.org)
 - [Graphviz](http://www.graphviz.org)
@@ -20,9 +25,9 @@ Required to build documentation:
 Getting Started
 ---------------
 
-Clone the repository and build in a subdirectory:
+Clone the repository and build:
 
-    git clone https://github.com/spoonb/comm.git
+    git clone https://github.com/bwitherspoon/signum.git
     cd comm
     mkdir build
     cd build
