@@ -6,7 +6,7 @@
 
 #include <libusb.h>
 
-#include "signum/usb.hpp"
+#include "signum/usb/source.hpp"
 
 namespace signum
 {

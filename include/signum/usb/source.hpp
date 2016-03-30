@@ -2,12 +2,12 @@
  * Copyright 2016 C. Brett Witherspoon
  */
 
-#ifndef SIGNUM_USB_HPP_
-#define SIGNUM_USB_HPP_
+#ifndef SIGNUM_USB_SOURCE_HPP_
+#define SIGNUM_USB_SOURCE_HPP_
 
 #include <cstdint>
 
-#include "buffer.hpp"
+#include "signum/buffer.hpp"
 
 struct libusb_device_handle;
 
@@ -54,4 +54,4 @@ private:
 } // namespace usb
 } // namespace signum
 
-#endif /* SIGNUM_USB_HPP_ */
+#endif /* SIGNUM_USB_SOURCE_HPP_ */

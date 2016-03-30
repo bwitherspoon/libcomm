@@ -16,7 +16,7 @@
 
 #include <boost/program_options.hpp>
 
-#include <signum/usb.hpp>
+#include <signum/usb/source.hpp>
 #include <signum/buffer.hpp>
 #include <signum/util/priority.hpp>
 
