@@ -9,9 +9,9 @@ Dependencies
 Required to compile the library:
 
 - [CMake](http://www.cmake.org/)
-- [ZeroMQ](http://zeromq.org/)
-- [libusb](http://libusb.info/)
-- [OpenCL](https://www.khronos.org/opencl/)
+- [ZeroMQ](http://zeromq.org/) (optional)
+- [libusb](http://libusb.info/) (optional)
+- [OpenCL](https://www.khronos.org/opencl/) (optional)
 
 Required for running the tests:
 
