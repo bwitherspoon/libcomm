@@ -2,17 +2,19 @@
  * Copyright 2015 C. Brett Witherspoon
  */
 
-#ifndef SIGNUM_SOCKET_HPP_
-#define SIGNUM_SOCKET_HPP_
+#ifndef SIGNUM_ZEROMQ_SOCKET_HPP_
+#define SIGNUM_ZEROMQ_SOCKET_HPP_
 
 #include <memory>
 #include <stdexcept>
 #include <string>
 
+namespace signum { class message; }
+
 namespace signum
 {
-
-class message;
+namespace zeromq
+{
 
 //! A messaging socket
 class socket
@@ -66,13 +68,13 @@ public:
    *  \param msg a message
    *  \sa recv()
    */
-  socket& send(const message& msg);
+  socket& send(const signum::message& msg);
 
   /*! \brief Receives a message on the socket
    *  \param msg a message
    *  \sa send()
    */
-  socket& recv(message& msg);
+  socket& recv(signum::message& msg);
 
 private:
   /*!
@@ -118,6 +120,7 @@ private:
   void* m_context;
 };
 
+} /* namespace zeromq */
 } /* namespace signum */
 
-#endif /* SIGNUM_SOCKET_HPP_ */
+#endif /* SIGNUM_ZEROMQ_SOCKET_HPP_ */

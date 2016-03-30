@@ -5,13 +5,13 @@
 #define BOOST_TEST_MODULE signum_test
 #include <boost/test/unit_test.hpp>
 
-#include "signum/socket.hpp"
+#include "signum/zeromq/socket.hpp"
 #include "signum/message.hpp"
 
 BOOST_AUTO_TEST_CASE(socket_test)
 {
-  using signum::context;
-  using signum::socket;
+  using signum::zeromq::context;
+  using signum::zeromq::socket;
   using signum::message;
 
   context ctx;

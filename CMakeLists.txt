@@ -36,7 +36,7 @@ set(SOURCES
     src/buffer.cpp)
 
 if (ZEROMQ_FOUND)
-    list(APPEND SOURCES src/context.cpp src/socket.cpp)
+    list(APPEND SOURCES src/zeromq/context.cpp src/zeromq/socket.cpp)
     include_directories(${ZeroMQ_INCLUDE_DIRS})
 else()
     message(WARNING "Building without ZeroMQ support")

@@ -4,9 +4,12 @@
 
 #include <zmq.h>
 
-#include "signum/socket.hpp"
+#include "signum/zeromq/socket.hpp"
 
-namespace signum {
+namespace signum
+{
+namespace zeromq
+{
 
 context::context()
 {
@@ -25,4 +28,5 @@ std::unique_ptr<socket> context::make_socket(socket::types type)
   return std::unique_ptr<socket>(new socket(m_context, type));
 }
 
+} /* namespace zeromq */
 } /* namespace signum */

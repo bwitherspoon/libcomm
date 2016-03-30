@@ -3,11 +3,15 @@
  */
 
 #include <zmq.h>
-#include "signum/socket.hpp"
+
+#include "signum/zeromq/socket.hpp"
 #include "signum/message.hpp"
 
 namespace signum
 {
+namespace zeromq
+{
+
 socket::socket(void* context, socket::types type)
 {
   m_socket = zmq_socket(context, static_cast<int>(type));
@@ -38,7 +42,7 @@ socket& socket::connect(const std::string& addr)
   return *this;
 }
 
-socket& socket::send(const message& msg)
+socket& socket::send(const signum::message& msg)
 {
   auto data = msg.data();
   auto size = msg.size();
@@ -49,7 +53,7 @@ socket& socket::send(const message& msg)
   return *this;
 }
 
-socket& socket::recv(message& msg)
+socket& socket::recv(signum::message& msg)
 {
   const std::size_t size = 1024;
   msg.resize(size);
@@ -77,5 +81,7 @@ socket::socket_error::socket_error(
 socket::socket_error::socket_error(const std::string& where)
         : socket_error(where, zmq_strerror(zmq_errno()))
 { }
+
+} /* namespace signum */
 } /* namespace signum */
 

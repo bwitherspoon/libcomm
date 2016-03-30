@@ -13,13 +13,16 @@
 
 namespace signum
 {
+
+namespace zeromq { class socket; }
+
 /**
  * \brief A class for serializing and deserializing messages
  */
 class message
 {
 public:
-  friend class socket;
+  friend class zeromq::socket;
 
   //! The binary message formats
   enum class formats : uint8_t
