@@ -11,6 +11,7 @@
 
 #include <boost/program_options.hpp>
 
+#include <signum/ip/udp.hpp>
 #include <signum/usb/context.hpp>
 #include <signum/usb/device.hpp>
 #include <signum/usb/session.hpp>
@@ -19,6 +20,7 @@
 
 namespace po = boost::program_options;
 namespace usb = signum::usb;
+namespace ip = signum::ip;
 
 int main(int argc, char *argv[])
 {
@@ -45,14 +47,19 @@ int main(int argc, char *argv[])
 
     signum::util::set_realtime_priority();
 
-    std::vector<unsigned char> data(2048);
+    ip::udp sink("224.0.0.1", 8888);
+
+    std::vector<unsigned char> data(1024);
 
     auto session = usb::session();
     auto context = session.get_context();
     auto device = session.create_device(0x0525, 0xa4a0);
     auto transfer = session.create_transfer(device, usb::endpoint::IN1,
                                             data.data(), data.size());
-    transfer->set_callback([transfer](auto buff, auto size) { transfer->submit(); });
+    transfer->set_callback([transfer, &sink](auto buff, auto size) {
+        sink.send(buff, size);
+        transfer->submit();
+    });
     transfer->submit();
 
     while (true)
