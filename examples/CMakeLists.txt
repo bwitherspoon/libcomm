@@ -5,9 +5,9 @@ find_package(Boost 1.53 COMPONENTS program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 if (CMAKE_USE_PTHREADS_INIT AND LIBUSB_FOUND)
-    add_executable(usb_to_pipe usb_to_pipe.cpp)
-    target_link_libraries(usb_to_pipe signum ${Boost_LIBRARIES})
-    install(TARGETS usb_to_pipe DESTINATION ${CMAKE_INSTALL_BINDIR})
+    add_executable(usb_example usb_example.cpp)
+    target_link_libraries(usb_example signum ${Boost_LIBRARIES})
+    install(TARGETS usb_example DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
 if (OPENCL_FOUND)

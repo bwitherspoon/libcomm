@@ -56,8 +56,11 @@ else()
 endif()
 
 if (LIBUSB_FOUND)
-    list(APPEND SOURCES src/usb/source.cpp)
-    list(APPEND HEADERS include/signum/usb/source.cpp)
+    list(APPEND HEADERS
+         include/signum/usb/context.hpp
+         include/signum/usb/device.hpp
+         include/signum/usb/session.hpp
+         include/signum/usb/transfer.hpp)
     include_directories(${LIBUSB_INCLUDE_DIRS})
 else()
     message(WARNING "Building without USB support")
