@@ -108,7 +108,8 @@ int main(int argc, char *argv[])
     po::options_description desc("Supported options");
     desc.add_options()
         ("help,h", "print help message")
-        ("length,l", po::value<size_t>(&length)->default_value(8), "set FFT length");
+        ("length,l", po::value<size_t>(&length)->default_value(8), "set FFT length")
+        ("verbose,v", "print verbose messages");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -190,17 +191,20 @@ int main(int argc, char *argv[])
     auto rand = std::bind(dist, eng);
     std::generate(buf, buf + length, rand);
 
-    std::cout << "Input: " << std::endl;
-    for (size_t i = 0; i < length; ++i) std::cout << buf[i] << std::endl;
+    if (vm.count("verbose"))
+    {
+        std::cout << "Input: " << std::endl;
+        for (size_t i = 0; i < length; ++i) std::cout << buf[i] << std::endl;
+    }
 
     queue.enqueue_unmap_buffer(buffer, ptr).wait();
 
     compute::wait_list events;
 
     // Enqueue kernels
-    //auto window_event = queue.enqueue_1d_range_kernel(window_kernel, 0, length/2, 0);
-    events.insert(queue.enqueue_1d_range_kernel(reorder_kernel, 0, length, 0));
-    events.insert(queue.enqueue_1d_range_kernel(stage1_kernel, 0, length/2, 0, events[0]));
+    events.insert(queue.enqueue_1d_range_kernel(window_kernel, 0, length/2, 0));
+    events.insert(queue.enqueue_1d_range_kernel(reorder_kernel, 0, length, 0, events[0]));
+    events.insert(queue.enqueue_1d_range_kernel(stage1_kernel, 0, length/2, 0, events[1]));
 
     for (size_t i = 2; i <= stages; ++i)
     {
@@ -231,8 +235,11 @@ int main(int argc, char *argv[])
                                    buffer.size());
     buf = static_cast<std::complex<float>*>(ptr);
 
-    std::cout << "Output: " << std::endl;
-    for (size_t i = 0; i < length; ++i) std::cout << buf[i] << std::endl;
+    if (vm.count("verbose"))
+    {
+        std::cout << "Output: " << std::endl;
+        for (size_t i = 0; i < length; ++i) std::cout << buf[i] << std::endl;
+    }
 
     queue.enqueue_unmap_buffer(buffer, ptr).wait();
 
