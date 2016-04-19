@@ -16,7 +16,7 @@
 #include <signum/usb/device.hpp>
 #include <signum/usb/session.hpp>
 #include <signum/usb/transfer.hpp>
-#include <signum/util/priority.hpp>
+#include <signum/utility/priority.hpp>
 
 namespace po = boost::program_options;
 namespace usb = signum::usb;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    signum::util::set_realtime_priority();
+    signum::utility::set_realtime_priority();
 
     auto socket = std::make_shared<ip::udp>("224.0.0.1", 8888);
 

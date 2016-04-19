@@ -10,7 +10,7 @@
 
 namespace signum
 {
-namespace util
+namespace utility
 {
 //! Convert big endian to host byte order
 static inline uint64_t betoh(uint64_t val) { return be64toh(val); }
@@ -59,7 +59,7 @@ double htobe(double val);
 
 //! Convert host to big endian byte order
 float htobe(float val);
-} /* namespace util */
+} /* namespace utility */
 } /* namespace signum */
 
 #endif /* SIGNUM_ENDIAN_HPP_ */

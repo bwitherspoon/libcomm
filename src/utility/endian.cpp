@@ -4,11 +4,11 @@
 
 #include <cstring>
 
-#include "signum/util/endian.hpp"
+#include "signum/utility/endian.hpp"
 
 namespace signum
 {
-namespace util
+namespace utility
 {
 int64_t betoh(int64_t val)
 {
@@ -93,5 +93,5 @@ float htobe(float val)
   std::memcpy(&val, &dat, sizeof(dat));
   return val;
 }
-} /* namespace util */
+} /* namespace utility */
 } /* namespace signum */

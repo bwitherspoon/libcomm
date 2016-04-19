@@ -8,7 +8,7 @@
 
 namespace signum
 {
-namespace util
+namespace utility
 {
 
 void set_realtime_priority()
@@ -28,5 +28,5 @@ void set_normal_priority()
 }
 
 
-} // end namespace util
+} // end namespace utility
 } // end namespace signum

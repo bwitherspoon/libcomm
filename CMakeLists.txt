@@ -40,10 +40,10 @@ set(HEADERS
     include/signum/oscillator.hpp
     include/signum/rational_resampler.hpp
     include/signum/signal.hpp
-    include/signum/util/endian.hpp)
+    include/signum/utility/endian.hpp)
 
 set(SOURCES
-    src/util/endian.cpp
+    src/utility/endian.cpp
     src/message.cpp
     src/buffer.cpp)
 
@@ -67,8 +67,8 @@ else()
 endif()
 
 if (CMAKE_USE_PTHREADS_INIT)
-    list(APPEND SOURCES src/util/priority.cpp)
-    list(APPEND HEADERS include/signum/util/priority.cpp)
+    list(APPEND SOURCES src/utility/priority.cpp)
+    list(APPEND HEADERS include/signum/utility/priority.cpp)
 else()
     message(WARNING "Building without POSIX threads support")
 endif()
