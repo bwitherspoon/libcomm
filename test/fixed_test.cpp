@@ -10,14 +10,14 @@
 #include <limits>
 #include <type_traits>
 
-#include "signum/fixed.hpp"
+#include "signum/utility/fixed.hpp"
 
 namespace
 {
 template<typename Float, typename Fixed>
 void _fixed_to_float_test()
 {
-  using signum::fixed_to_float;
+  using signum::utility::fixed_to_float;
 
   const auto delta = 1.0 / (std::numeric_limits<Fixed>::max() + 1.0);
 
@@ -48,7 +48,7 @@ void _fixed_to_float_test()
 template<typename Fixed, typename Float>
 void _float_to_fixed_test()
 {
-  using signum::float_to_fixed;
+  using signum::utility::float_to_fixed;
 
   const auto delta = 1.0 / (std::numeric_limits<Fixed>::max() + 1.0);
   const auto epsilon = std::numeric_limits<Float>::epsilon();

@@ -11,6 +11,8 @@
 
 namespace signum
 {
+namespace utility
+{
 //! Convert a fixed-point type to a floating-point type
 template<typename Float, typename Fixed>
 Float fixed_to_float(Fixed fixed)
@@ -53,6 +55,7 @@ Fixed float_to_fixed(Float floating)
         return static_cast<Fixed>(std::lround(ret));
   }
 }
+} /* namespace utility */
 } /* namespace signum */
 
 #endif /* SIGNUM_FIXED_HPP_ */
