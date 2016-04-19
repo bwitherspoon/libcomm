@@ -3,6 +3,7 @@
  */
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <complex>
 #include <iostream>
@@ -95,7 +96,7 @@ const char *source = BOOST_PP_STRINGIZE(
 
 bool ispowertwo(unsigned int x)
 {
-    return (x != 0) && !(x & (x - 1));
+    return !(x == 0 || (x & (x - 1)));
 }
 
 } // end anonymous namespace
@@ -183,8 +184,15 @@ int main(int argc, char *argv[])
                                         compute::command_queue::map_write, 0,
                                         buffer.size());
     auto buf = static_cast<std::complex<float>*>(ptr);
-    //std::generate(buf, buf + length, []() { return std::complex<float>(1,1); });
-    std::iota(buf, buf + length, 0);
+
+    std::default_random_engine eng;
+    std::normal_distribution<> dist{0, 1};
+    auto rand = std::bind(dist, eng);
+    std::generate(buf, buf + length, rand);
+
+    std::cout << "Input: " << std::endl;
+    for (size_t i = 0; i < length; ++i) std::cout << buf[i] << std::endl;
+
     queue.enqueue_unmap_buffer(buffer, ptr).wait();
 
     compute::wait_list events;
@@ -207,12 +215,25 @@ int main(int argc, char *argv[])
         }
     }
 
+    events.wait();
+
+    // Print profiling information
+    std::chrono::nanoseconds time{0};
+    for (const auto &event : events)
+    {
+        time += event.duration<std::chrono::nanoseconds>();
+    }
+    std::cout << "Execute time: " << time.count() << " ns" << std::endl;
+
     // Print output buffer
     ptr = queue.enqueue_map_buffer(buffer,
                                    compute::command_queue::map_read, 0,
-                                   buffer.size(), events);
+                                   buffer.size());
     buf = static_cast<std::complex<float>*>(ptr);
+
+    std::cout << "Output: " << std::endl;
     for (size_t i = 0; i < length; ++i) std::cout << buf[i] << std::endl;
+
     queue.enqueue_unmap_buffer(buffer, ptr).wait();
 
     return 0;
