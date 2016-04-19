@@ -47,17 +47,20 @@ int main(int argc, char *argv[])
 
     signum::util::set_realtime_priority();
 
-    ip::udp sink("224.0.0.1", 8888);
-
-    std::vector<unsigned char> data(1024);
+    auto socket = std::make_shared<ip::udp>("224.0.0.1", 8888);
 
     auto session = usb::session();
+
     auto context = session.get_context();
+
     auto device = session.create_device(0x0525, 0xa4a0);
+
+    std::vector<unsigned char> data(device->max_packet_size(usb::endpoint::IN1));
+
     auto transfer = session.create_transfer(device, usb::endpoint::IN1,
                                             data.data(), data.size());
-    transfer->set_callback([transfer, &sink](auto buff, auto size) {
-        sink.send(buff, size);
+    transfer->set_callback([transfer, &socket](auto buff, auto size) {
+        socket->send(buff, size);
         transfer->submit();
     });
     transfer->submit();
@@ -69,5 +72,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-

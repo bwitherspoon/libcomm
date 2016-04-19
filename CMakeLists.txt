@@ -74,17 +74,6 @@ else()
 endif()
 
 if (OPENCL_FOUND)
-    list(APPEND SOURCES
-        src/opencl/device.cpp
-        src/opencl/kernel.cpp
-        src/opencl/platforms.cpp
-        src/opencl/session.cpp)
-    list(APPEND HEADERS
-        include/signum/opencl/device.cpp
-        include/signum/opencl/error.cpp
-        include/signum/opencl/kernel.cpp
-        include/signum/opencl/platforms.cpp
-        include/signum/opencl/session.cpp)
     include_directories(${OpenCL_INCLUDE_DIRS})
 else()
     message(WARNING "Building without OpenCL support")
