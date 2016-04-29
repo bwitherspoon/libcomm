@@ -41,7 +41,8 @@ set(HEADERS
     include/signum/rational_resampler.hpp
     include/signum/signal.hpp
     include/signum/utility/endian.hpp
-    include/signum/pipe.hpp)
+    include/signum/pipe.hpp
+    include/signum/hdf5.hpp)
 
 set(SOURCES
     src/utility/endian.cpp
