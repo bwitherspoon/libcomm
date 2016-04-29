@@ -40,7 +40,8 @@ set(HEADERS
     include/signum/oscillator.hpp
     include/signum/rational_resampler.hpp
     include/signum/signal.hpp
-    include/signum/utility/endian.hpp)
+    include/signum/utility/endian.hpp
+    include/signum/pipe.hpp)
 
 set(SOURCES
     src/utility/endian.cpp
