@@ -8,6 +8,7 @@
 #include <complex>
 #include <iostream>
 #include <stdexcept>
+#include <random>
 
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/program_options.hpp>
