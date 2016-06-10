@@ -16,8 +16,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef SIGNUM_BUFFER_HPP_
-#define SIGNUM_BUFFER_HPP_
+#ifndef SIGNUM_CIRCULAR_BUFFER_HPP_
+#define SIGNUM_CIRCULAR_BUFFER_HPP_
 
 #include <atomic>  // for std::atomic
 #include <cstddef> // for std::size_t
@@ -28,7 +28,7 @@
 
 namespace signum
 {
-namespace buffer
+namespace circular_buffer
 {
 
 template<typename> class writer;
@@ -36,7 +36,7 @@ template<typename> class reader;
 
 namespace detail
 {
-//! A class for buffer shared data
+//! A class for shared data
 class impl
 {
 public:
@@ -47,8 +47,8 @@ public:
     impl & operator=(const impl &) = delete;
     impl & operator=(impl &&) = delete;
 private:
-    template<typename> friend class ::signum::buffer::writer;
-    template<typename> friend class ::signum::buffer::reader;
+    template<typename> friend class ::signum::circular_buffer::writer;
+    template<typename> friend class ::signum::circular_buffer::reader;
     template<template<typename> class, typename> friend class base;
     void * d_base;
     size_t d_size;
@@ -76,7 +76,7 @@ public:
     using const_iterator  = const U *;
 
     static_assert(std::numeric_limits<size_type>::is_modulo,
-                  "buffer::base: modulo arithmetic not supported");
+                  "circular_buffer::base: modulo arithmetic not supported");
 
     //! Returns an iterator to the beginning of the buffer
     iterator begin();
@@ -107,6 +107,9 @@ public:
 
     //! Consume items from the buffer
     void consume(size_type n);
+
+    //! Consume all items in the buffer
+    void clear() { consume(size()); }
 
 protected:
     explicit base(size_type n);
@@ -369,7 +372,7 @@ reader<T> writer<T>::make_reader()
     return std::move(reader<U>{detail::base<writer,T>::d_impl});
 }
 
-} // namespace buffer
+} // namespace circular_buffer
 } // namespace signum
 
-#endif /* SIGNUM_BUFFER_HPP_ */
+#endif /* SIGNUM_CIRCULAR_BUFFER_HPP_ */

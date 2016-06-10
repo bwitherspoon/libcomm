@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 C. Brett Witherspoon
+ * Copyright 2015, 2016 C. Brett Witherspoon
  */
 
 #define BOOST_TEST_MODULE signum_tests
@@ -9,11 +9,13 @@
 #include <functional>
 #include <random>
 
-#include "signum/buffer.hpp"
+#include "signum/circular_buffer.hpp"
+
+namespace cb = signum::circular_buffer;
 
 BOOST_AUTO_TEST_CASE(default_buffer_test)
 {
-    auto wr = signum::buffer::writer<float>();
+    auto wr = cb::writer<float>();
     BOOST_REQUIRE_NE(wr.size(), 0);
     BOOST_REQUIRE_NE(wr.max_size(), 0);
 
@@ -24,12 +26,12 @@ BOOST_AUTO_TEST_CASE(default_buffer_test)
 BOOST_AUTO_TEST_CASE(buffer_test)
 {
   const size_t sz = 2047;
-  auto wr = signum::buffer::writer<float>(sz);
+  auto wr = cb::writer<float>(sz);
   auto rd = wr.make_reader();
 
   // Test equality operators
   {
-    signum::buffer::reader<float> & rd_ = rd;
+    cb::reader<float> & rd_ = rd;
     BOOST_REQUIRE(rd == rd_);
   }
   BOOST_REQUIRE(wr == rd);

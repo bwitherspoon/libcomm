@@ -25,9 +25,9 @@ add_executable(fixed_test fixed_test.cpp)
 target_link_libraries(fixed_test ${Boost_LIBRARIES})
 add_test(fixed_test fixed_test)
 
-add_executable(buffer_test buffer_test.cpp)
-target_link_libraries(buffer_test signum ${Boost_LIBRARIES})
-add_test(buffer_test buffer_test)
+add_executable(circular_buffer_test circular_buffer_test.cpp)
+target_link_libraries(circular_buffer_test signum ${Boost_LIBRARIES})
+add_test(circular_buffer_test circular_buffer_test)
 
 add_executable(aligned_allocator_test aligned_allocator_test.cpp)
 target_link_libraries(aligned_allocator_test ${Boost_LIBRARIES})

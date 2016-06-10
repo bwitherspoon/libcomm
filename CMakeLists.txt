@@ -33,7 +33,7 @@ include_directories(include)
 
 set(HEADERS
     include/signum/aligned_allocator.hpp
-    include/signum/buffer.hpp
+    include/signum/circular_buffer.hpp
     include/signum/fixed.hpp
     include/signum/math.hpp
     include/signum/message.hpp
@@ -47,7 +47,7 @@ set(HEADERS
 set(SOURCES
     src/utility/endian.cpp
     src/message.cpp
-    src/buffer.cpp)
+    src/circular_buffer.cpp)
 
 if (ZEROMQ_FOUND)
     list(APPEND SOURCES src/zeromq/context.cpp src/zeromq/socket.cpp)

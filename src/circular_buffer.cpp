@@ -19,12 +19,12 @@
 #include <unistd.h>   // for sysconf
 #include <sys/mman.h> // for mmap
 
+#include "signum/circular_buffer.hpp"
 #include "signum/math.hpp"
-#include "signum/buffer.hpp"
 
 namespace signum
 {
-namespace buffer
+namespace circular_buffer
 {
 namespace
 {
