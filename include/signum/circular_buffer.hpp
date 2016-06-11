@@ -108,9 +108,6 @@ public:
     //! Consume items from the buffer
     void consume(size_type n);
 
-    //! Consume all items in the buffer
-    void clear() { consume(size()); }
-
 protected:
     explicit base(size_type n);
 
@@ -246,6 +243,9 @@ public:
 
     //! Wait for a number of items to be in the buffer
     void wait(size_type n);
+
+    //! Consume all items in the buffer
+    void clear() { this->consume(this->size()); }
 
 private:
     using base_type = detail::base<reader,value_type>;
