@@ -36,8 +36,6 @@ public:
         int error = libusb_init(&context_);
         if (error != LIBUSB_SUCCESS)
             throw std::runtime_error(libusb_strerror(static_cast<libusb_error>(error)));
-
-        set_debug(LIBUSB_LOG_LEVEL_INFO);
     }
 
     context(const context&) = delete;
