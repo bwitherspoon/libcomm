@@ -33,6 +33,7 @@ class pipe
 {
 public:
     pipe(const std::string &name)
+        : m_name(name)
     {
         // Try to open pipe (blocks until other end appears) or create it
         m_fd = open(name.c_str(), O_WRONLY);
@@ -51,6 +52,7 @@ public:
 
     ~pipe()
     {
+        unlink();
         close(m_fd);
     }
 
@@ -62,6 +64,10 @@ public:
 
     operator int() const { return m_fd; }
 
+    std::string name() const { return m_name; }
+
+    void unlink() { ::unlink(m_name.c_str()); }
+
     template<typename T>
     size_t write(T *data, size_t size)
     {
@@ -72,6 +78,7 @@ public:
     }
 
 private:
+    const std::string m_name;
     int m_fd;
 };
 
