@@ -19,6 +19,7 @@
 #ifndef SIGNUM_PIPE_HPP_
 #define SIGNUM_PIPE_HPP_
 
+#include <stdexcept>
 #include <string>
 
 #include <sys/types.h>
