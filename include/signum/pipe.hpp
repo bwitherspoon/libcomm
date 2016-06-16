@@ -32,14 +32,14 @@ namespace signum
 class pipe
 {
 public:
-    explicit pipe(const std::string &name)
+    explicit pipe(const std::string &name, mode_t mode = 0660)
         : m_name(name)
     {
         // Try to open pipe (blocks until other end appears) or create it
         m_fd = open(name.c_str(), O_WRONLY);
         if (m_fd == -1)
         {
-            if (mkfifo(name.c_str(), 0666) == -1)
+            if (mkfifo(name.c_str(), mode) == -1)
                 throw std::runtime_error("Unable to create named pipe: " + name);
 
             m_fd = open(name.c_str(), O_WRONLY);
