@@ -55,6 +55,14 @@ public:
 
     pipe(const pipe&) = delete;
 
+    pipe(pipe &&other)
+        : m_name(other.m_name),
+          m_fd(other.m_fd)
+    {
+        other.m_fd = -1;
+        other.m_name = "";
+    }
+
     ~pipe()
     {
         unlink();
@@ -62,6 +70,17 @@ public:
     }
 
     pipe &operator=(const pipe&) = delete;
+
+    pipe &operator=(pipe &&other)
+    {
+        m_name = other.m_name;
+        other.m_name = "";
+
+        m_fd = other.m_fd;
+        other.m_fd = -1;
+
+        return *this;
+    }
 
     bool operator==(const pipe &rhs) const { return m_fd == rhs.m_fd; }
 
@@ -83,7 +102,7 @@ public:
     }
 
 private:
-    const std::string m_name;
+    std::string m_name;
     int m_fd;
 };
 
