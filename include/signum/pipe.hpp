@@ -32,7 +32,7 @@ namespace signum
 class pipe
 {
 public:
-    pipe(const std::string &name)
+    explicit pipe(const std::string &name)
         : m_name(name)
     {
         // Try to open pipe (blocks until other end appears) or create it
