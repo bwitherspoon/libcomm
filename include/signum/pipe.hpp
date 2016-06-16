@@ -19,7 +19,7 @@
 #ifndef SIGNUM_PIPE_HPP_
 #define SIGNUM_PIPE_HPP_
 
-#include <stdexcept>
+#include <system_error>
 #include <string>
 
 #include <sys/types.h>
@@ -45,12 +45,15 @@ public:
         m_fd = open(name.c_str(), O_WRONLY);
         if (m_fd == -1)
         {
+            if (errno == EACCES)
+                throw std::system_error(EACCES, std::system_category());
+
             if (mkfifo(name.c_str(), mode) == -1)
-                throw std::runtime_error("Unable to create named pipe: " + name);
+                throw std::system_error(errno, std::system_category());
 
             m_fd = open(name.c_str(), O_WRONLY);
             if (m_fd == -1)
-                throw std::runtime_error("Unable to open named pipe: " + name);
+                throw std::system_error(errno, std::system_category());
         }
     }
 
@@ -98,7 +101,7 @@ public:
     {
         ssize_t n = ::write(m_fd, data, size * sizeof(T));
         if (n == -1)
-            throw std::runtime_error("Unable to write to named pipe");
+            throw std::system_error(errno, std::system_category());
         return n;
     }
 
