@@ -32,6 +32,11 @@ namespace signum
 class pipe
 {
 public:
+    pipe()
+        : m_name(), m_fd(-1)
+    {
+    }
+
     explicit pipe(const std::string &name, mode_t mode = 0660)
         : m_name(name)
     {
