@@ -41,20 +41,23 @@ public:
     explicit pipe(const std::string &name, mode_t mode = 0660)
         : m_name(name)
     {
-        // Try to open pipe (blocks until other end appears) or create it
-        m_fd = open(name.c_str(), O_WRONLY);
-        if (m_fd == -1)
+        struct stat st;
+
+        if (stat(name.c_str(), &st) == -1)
         {
-            if (errno == EACCES)
-                throw std::system_error(EACCES, std::system_category());
-
-            if (mkfifo(name.c_str(), mode) == -1)
+            if (errno != ENOENT)
                 throw std::system_error(errno, std::system_category());
-
-            m_fd = open(name.c_str(), O_WRONLY);
-            if (m_fd == -1)
+            else if (mkfifo(name.c_str(), mode) == -1)
                 throw std::system_error(errno, std::system_category());
         }
+        else if (!S_ISFIFO(st.st_mode))
+        {
+            throw std::runtime_error("Path " + name + " is not a FIFO");
+        }
+
+        m_fd = open(name.c_str(), O_WRONLY);
+        if (m_fd == -1)
+            throw std::system_error(errno, std::system_category());
     }
 
     pipe(const pipe&) = delete;
