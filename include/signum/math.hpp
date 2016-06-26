@@ -91,6 +91,22 @@ constexpr T lcm(T a, T b)
   return (a == 0 and b == 0) ? 0 : (abs(a) / gcd(a, b)) * abs(b);
 }
 
+/**
+ * \brief Compute the next higher power of two
+ * \param a an integer
+ * \return the smallest power of two greater then a
+ */
+template <typename T>
+constexpr T nextpow2(T a)
+{
+  static_assert(std::is_integral<T>::value,
+      "template argument must be an integral type.");
+
+  T n = 1;
+  while (n < a) n <<= 1;
+  return n;
+}
+
 } /* namespace math */
 } /* namespace signum */
 #endif /* SIGNUM_MATH_HPP_ */

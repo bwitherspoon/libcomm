@@ -44,3 +44,11 @@ BOOST_AUTO_TEST_CASE(lcm_test)
 
   BOOST_CHECK_EQUAL(lcm(4, 10), 20);
 }
+
+BOOST_AUTO_TEST_CASE(nextpow2_test)
+{
+  using signum::math::nextpow2;
+
+  BOOST_CHECK_EQUAL(nextpow2(600000), 1048576);
+}
+
