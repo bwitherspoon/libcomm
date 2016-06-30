@@ -37,7 +37,7 @@ add_executable(oscillator_test oscillator_test.cpp)
 target_link_libraries(oscillator_test ${Boost_LIBRARIES})
 add_test(oscillator_test oscillator_test)
 
-add_executable(signal_test signal_test.cpp)
-target_link_libraries(signal_test ${Boost_LIBRARIES})
-add_test(signal_test signal_test)
+add_executable(buffer_test buffer_test.cpp)
+target_link_libraries(buffer_test ${Boost_LIBRARIES})
+add_test(buffer_test buffer_test)
 

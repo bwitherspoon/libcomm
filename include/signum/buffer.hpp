@@ -1,18 +1,25 @@
 /*
- * Copyright 2015 C. Brett Witherspoon
+ * Copyright 2015, 2016 C. Brett Witherspoon
  */
 
-#ifndef SIGNUM_SIGNAL_HPP_
-#define SIGNUM_SIGNAL_HPP_
+#ifndef SIGNUM_BUFFER_HPP_
+#define SIGNUM_BUFFER_HPP_
 
-#include <cstddef>     // for size_t, ptrdiff_t
-#include <type_traits> // for std::is_arithmetic
-#include <vector>      // for std::vector
+#include <array>
+#include <cstddef> // for size_t, ptrdiff_t
+#include <vector>
 
 namespace signum
 {
+/**
+ * A buffer object represents a contiguous region of memory. A buffer object
+ * does not have ownership of the memory it refers too. It is the responsibility
+ * of the application to ensure the memory region remains valid for the lifetime
+ * of the buffer object.
+ */
+
 template<typename T>
-class signal final
+class buffer final
 {
 public:
   using value_type      = T;
@@ -25,14 +32,14 @@ public:
   using iterator        = T *;
   using const_iterator  = const T *;
 
-  static_assert(std::is_arithmetic<T>::value,
-                "Template parameter must be arithmetic type");
+  buffer();
 
-  signal();
+  buffer(std::vector<T> &vec);
 
-  signal(std::vector<T> & vec);
+  template<std::size_t N>
+  buffer(std::array<T, N> &arr);
 
-  ~signal() = default;
+  ~buffer() = default;
 
   iterator begin() { return d_begin; }
 
@@ -60,14 +67,20 @@ private:
 };
 
 template<typename T>
-signal<T>::signal()
-  : d_begin(nullptr), d_end(nullptr)
+buffer<T>::buffer()
+    : d_begin(nullptr), d_end(nullptr)
 { }
 
 template<typename T>
-signal<T>::signal(std::vector<T> & vec)
-  : d_begin(vec.data()), d_end(d_begin + vec.size())
+buffer<T>::buffer(std::vector<T> &vec)
+    : d_begin(vec.data()), d_end(vec.data() + vec.size())
+{ }
+
+template<typename T>
+template<std::size_t N>
+buffer<T>::buffer(std::array<T, N> &arr)
+    : d_begin(arr.begin()), d_end(arr.end())
 { }
 
 } // namespace signum
-#endif /* SIGNUM_SIGNAL_HPP_ */
+#endif /* SIGNUM_BUFFER_HPP_ */
