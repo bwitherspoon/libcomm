@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016 C. Brett Witherspoon
+ * Copyright 2015-2018 C. Brett Witherspoon
  *
  * This file is part of the signum library
  *
@@ -105,6 +105,20 @@ constexpr T nextpow2(T a)
   T n = 1;
   while (n < a) n <<= 1;
   return n;
+}
+
+/**
+ * \brief Determine if an integral value is a power of two
+ * \param a an integral value
+ * \return true if the integral value is a power of two or false otherwise
+ */
+template <typename T>
+constexpr bool ispow2(T x)
+{
+  static_assert(std::is_integral<T>::value,
+      "template argument must be an integral type.");
+
+  return !(x == 0 || (x & (x - 1)));
 }
 
 } /* namespace math */
